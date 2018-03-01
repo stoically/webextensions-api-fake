@@ -1,0 +1,29 @@
+{
+  "name": "webextensions-api-fake",
+  "version": "0.0.6",
+  "description": "WebExtensions API Fake",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stoically/webextensions-api-fake.git"
+  },
+  "dependencies": {
+    "sinon-chrome": "^2.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.0.1",
+    "sinon": "^4.4.2",
+    "sinon-chai": "^2.14.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "test-watch": "npm run test -- --watch"
+  },
+  "homepage": "https://github.com/stoically/webextensions-api-fake",
+  "author": "stoically <stoically@protonmail.com>",
+  "bugs": {
+    "url": "https://github.com/stoically/webextensions-api-fake/issues"
+  },
+  "license": "MIT"
+}
