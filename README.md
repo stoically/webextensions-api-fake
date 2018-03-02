@@ -1,11 +1,11 @@
 ### WebExtensions API Fake
 
-When feature-testing [WebExtensions](https://developer.mozilla.org/Add-ons/WebExtensions) you might want to fake the API inmemory without spawning a complete browser.
+When feature/unit-testing [WebExtensions](https://developer.mozilla.org/Add-ons/WebExtensions) you might want a working fake implementation of the API in-memory available without spawning a complete browser.
 
-This package depends on [sinon](https://github.com/sinonjs/sinon) and [sinon-chrome](https://github.com/acvetkov/sinon-chrome) to have the whole WebExtension API available as `sinon stubs`. You can pass in your own stubbed version of the `browser`, as long as the individual functions support `.callsFake(fakeFunction);`.
+This package depends on [sinon](https://github.com/sinonjs/sinon) and [sinon-chrome](https://github.com/acvetkov/sinon-chrome) to have the whole `browser` WebExtension API available as `sinon stubs`. You can pass in your own stubbed version of the `browser`, as long as the individual functions support `.callsFake(fakeFunction);`.
 
 
-Currently partially supported APIs are:
+Currently partially supported API fake implementations are:
 
 * [contextualIdentities](https://developer.mozilla.org/Add-ons/WebExtensions/API/contextualIdentities)
   * create
@@ -34,7 +34,7 @@ npm install --save-dev webextensions-api-fake
 ```
 
 
-### Example
+### NodeJS Example
 
 Given the following production code for your WebExtension:
 
@@ -97,7 +97,7 @@ describe('My Fancy Feature', () => {
 
 ### API
 
-#### exported default function([options])
+#### Exported default function([options])
 
 * *options* `<object>`
   - *browser* `<object>` Optional stubbed version of the WebExtensions API. Defaults to `sinon-chrome/webextensions` if not given
@@ -107,7 +107,7 @@ Returns the stubbed `browser` with applied fakes.
 
 
 
-#### Class: WebExtensionsApiFake
+#### Exported Class: WebExtensionsApiFake
 
 ##### Constructor: new WebExtensionsApiFake
 
