@@ -9,7 +9,7 @@ module.exports = () => {
     'red': '#ff613d',
     'pink': '#ff4bda',
     'purple': '#af51f5',
-  }
+  };
   const _containers = [{
     color: 'blue',
     colorCode: _containerColors['blue'],

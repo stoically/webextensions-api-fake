@@ -2,7 +2,7 @@
 
 When feature/unit-testing [WebExtensions](https://developer.mozilla.org/Add-ons/WebExtensions) you might want a working fake implementation of the API in-memory available without spawning a complete browser.
 
-This package depends on [sinon](https://github.com/sinonjs/sinon) and [sinon-chrome](https://github.com/acvetkov/sinon-chrome) to have the whole `browser` WebExtension API available as `sinon stubs`. You can pass in your own stubbed version of the `browser`, as long as the individual functions support `.callsFake(fakeFunction);`.
+This package depends on [sinon](https://github.com/sinonjs/sinon) and [sinon-chrome](https://github.com/acvetkov/sinon-chrome) to have the whole `browser` WebExtension API available as `sinon stubs`. You can pass in your own stubbed version of the `browser`, as long as the individual functions support the sinon `.callsFake(fakeFunction)` interface.
 
 
 Currently partially supported API fake implementations are:
@@ -137,10 +137,10 @@ npm test
 #### Exported default function([options])
 
 * *options* `<object>`
-  - *browser* `<object>` Optional stubbed version of the WebExtensions API. Defaults to `sinon-chrome/webextensions` if not given
+  - *browser* `<object>`, optional, Stubbed version of the WebExtensions API. Defaults to `sinon-chrome/webextensions` if not given
 
 
-Returns the stubbed `browser` with applied fakes.
+Returns a new stubbed `browser` with newly created and applied fakes.
 
 
 
@@ -148,8 +148,13 @@ Returns the stubbed `browser` with applied fakes.
 
 ##### Constructor: new WebExtensionsApiFake
 
+##### webExtensionsApiFake.createBrowser()
+
+Returns a new stubbed `browser` without applied fakes.
+
+
 ##### webExtensionsApiFake.fakeApi(browser)
 
-* *browser* `<object>` Required stubbed version of the WebExtensions API
+* *browser* `<object>`, required, Stubbed version of the WebExtensions API
 
-Applies the API fakes to the given browser object. Can be called multiple times.
+Applies the API fakes to the given browser object. Can be called multiple times with different browser stubs and applies the same fakes (with the same in-memory data) in that case.

@@ -3,7 +3,7 @@ const sinonChromeWebExtensionsConfig = require('sinon-chrome/config/stable-api-f
 
 const contextualIdentities = require('./contextualIdentities');
 const tabs = require('./tabs');
-const storage = require('./storage')
+const storage = require('./storage');
 
 
 class WebExtensionsApiFake {
@@ -11,6 +11,10 @@ class WebExtensionsApiFake {
     this.contextualIdentities = contextualIdentities();
     this.tabs = tabs();
     this.storage = storage();
+  }
+
+  createBrowser() {
+    return new SinonChromeApi(sinonChromeWebExtensionsConfig).create();
   }
 
   fakeApi(browser) {
@@ -21,14 +25,15 @@ class WebExtensionsApiFake {
 }
 
 module.exports = (options = {}) => {
+  const webextensionApiFake = new WebExtensionsApiFake;
+
   let browser;
   if (!options.browser) {
-    browser = new SinonChromeApi(sinonChromeWebExtensionsConfig).create();
+    browser = webextensionApiFake.createBrowser();
   } else {
     browser = options.browser;
   }
 
-  const webextensionApiFake = new WebExtensionsApiFake;
   webextensionApiFake.fakeApi(browser);
 
   return browser;
