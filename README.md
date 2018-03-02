@@ -135,11 +135,11 @@ describe('Useful WebExtension', () => {
 ```
 
 
-You can find the example in the `test` directory and also execute it:
+You can find the example in the `examples` directory and also execute it:
 
 ```
 npm install
-npm test
+npm run example
 ```
 
 
