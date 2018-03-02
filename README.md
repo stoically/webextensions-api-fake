@@ -100,6 +100,17 @@ describe('Useful WebExtension', () => {
 
     // wait a tick to give the production code the chance to execute
     return new Promise(resolve => process.nextTick(resolve));
+
+    // instead of doing a require and then waiting for the next tick
+    // it would also be possible to set e.g. `global._testEnv = true;` in the test
+    // and in the production code something like
+    //   if (!_testEnv) {
+    //     myFancyFeature();
+    //   } else {
+    //     module.exports = myFancyFeature;
+    //   }
+    //
+    // that would make it possible to get the actual function when doing require
   });
 
   describe('My Fancy Feature which is executed on load', () => {
