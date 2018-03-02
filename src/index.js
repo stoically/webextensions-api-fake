@@ -1,5 +1,5 @@
-const SinonChromeApi = require("sinon-chrome/api");
-const sinonChromeWebExtensionsConfig = require("sinon-chrome/config/stable-api-ff.json");
+const SinonChromeApi = require('sinon-chrome/api');
+const sinonChromeWebExtensionsConfig = require('sinon-chrome/config/stable-api-ff.json');
 
 const contextualIdentities = require('./contextualIdentities');
 const tabs = require('./tabs');
@@ -28,7 +28,7 @@ module.exports = (options = {}) => {
     browser = options.browser;
   }
 
-  const webextensionApiFake = new WebExtensionsApiFake(browser);
+  const webextensionApiFake = new WebExtensionsApiFake;
   webextensionApiFake.fakeApi(browser);
 
   return browser;

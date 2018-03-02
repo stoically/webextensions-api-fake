@@ -8,6 +8,11 @@ module.exports = () => {
         tab.id = _tabId;
         _tabs.push(tab);
         _tabId++;
+
+        if (browser.tabs.onCreated.addListener.callCount) {
+          browser.tabs.onCreated.addListener.yield(tab);
+        }
+
         return tab;
       });
       browser.tabs.get.callsFake(async tabId => {

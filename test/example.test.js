@@ -1,49 +1,40 @@
-// index.js
-const firstWeDoThis = async () => {
-  const container = await browser.contextualIdentities.create({
-    name: 'My Container',
-    color: 'blue',
-    icon: 'fingerprint'
-  });
-
-  await browser.storage.local.set({
-    lastCreatedContainer: container.cookieStoreId
-  });
-}
-
-const thenWeDoThat = async () => {
-  const {lastCreatedContainer} = await browser.storage.local.get('lastCreatedContainer');
-  await browser.tabs.create({
-    cookieStoreId: lastCreatedContainer
-  });
-}
-
-const myFancyFeature = async () => {
-  await firstWeDoThis();
-  await thenWeDoThat();
-}
-
-
-// index.test.js
-const sinon = require("sinon");
-const sinonChai = require("sinon-chai");
-const chai = require("chai");
+const browserFake = require('../src');
+const reload = require('require-reload')(require);
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
+const chai = require('chai');
 chai.should();
 chai.use(sinonChai);
 
-const WebExtensionsApiFake = require('../src');
-global.browser = WebExtensionsApiFake();
 
-describe('My Fancy Feature', () => {
+describe('Useful WebExtension', () => {
   beforeEach(async () => {
-    await myFancyFeature();
+    // fake the browser
+    global.browser = browserFake();
+
+    // execute the production code
+    reload('./example.js');
+
+    // wait a tick to give the production code the chance to execute
+    return new Promise(resolve => process.nextTick(resolve));
   });
 
-  it('should work', async () => {
-    browser.tabs.create.should.have.been.calledWithMatch({
-      cookieStoreId: 'firefox-container-5'
+  describe('My Fancy Feature which is executed on load', () => {
+    it('should work', async () => {
+      browser.tabs.create.should.have.been.calledWithMatch({
+        cookieStoreId: sinon.match.string
+      });
+      const tabs = await browser.tabs.query({});
+      tabs.length.should.equal(1);
     });
-    const tabs = await browser.tabs.query({});
-    tabs.length.should.equal(1);
+  });
+
+  describe('Triggering listeners after loading the production code', () => {
+    it('should work as well', async () => {
+      const createdTab = await browser.tabs.create({});
+
+      const {lastCreatedTab} = await browser.storage.local.get('lastCreatedTab');
+      lastCreatedTab.id.should.equal(createdTab.id);
+    });
   });
 });

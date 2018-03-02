@@ -38,8 +38,14 @@ npm install --save-dev webextensions-api-fake
 
 Given the following production code for your WebExtension:
 
-*index.js*
+*example.js*
 ```js
+browser.tabs.onCreated.addListener(async tab => {
+  await browser.storage.local.set({
+    lastCreatedTab: tab
+  });
+});
+
 const firstWeDoThis = async () => {
   const container = await browser.contextualIdentities.create({
     name: 'My Container',
@@ -63,35 +69,63 @@ const myFancyFeature = async () => {
   await firstWeDoThis();
   await thenWeDoThat();
 }
+
+myFancyFeature();
 ```
 
 
-You could have a test that looks like this (using `mocha`, `sinon-chai` and `chai.should` in this case):
+You could have a test that looks like this (using `mocha`, `sinon-chai`, `chai.should` and `require-reload` in this case):
 
-*index.test.js*
+*example.test.js*
 ```js
-const sinon = require("sinon");
-const sinonChai = require("sinon-chai");
-const chai = require("chai");
+const browserFake = require('webextensions-api-fake');
+const reload = require('require-reload')(require);
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
+const chai = require('chai');
 chai.should();
 chai.use(sinonChai);
 
-const WebExtensionsApiFake = require('webextensions-api-fake');
-global.browser = WebExtensionsApiFake();
 
-describe('My Fancy Feature', () => {
+describe('Useful WebExtension', () => {
   beforeEach(async () => {
-    await myFancyFeature();
+    // fake the browser
+    global.browser = browserFake();
+
+    // execute the production code
+    reload('./example.js');
+
+    // wait a tick to give the production code the chance to execute
+    return new Promise(resolve => process.nextTick(resolve));
   });
 
-  it('should work', async () => {
-    browser.tabs.create.should.have.been.calledWithMatch({
-      cookieStoreId: 'firefox-container-5'
+  describe('My Fancy Feature which is executed on load', () => {
+    it('should work', async () => {
+      browser.tabs.create.should.have.been.calledWithMatch({
+        cookieStoreId: sinon.match.string
+      });
+      const tabs = await browser.tabs.query({});
+      tabs.length.should.equal(1);
     });
-    const tabs = await browser.tabs.query({});
-    tabs.length.should.equal(1);
+  });
+
+  describe('Triggering listeners after loading the production code', () => {
+    it('should work as well', async () => {
+      const createdTab = await browser.tabs.create({});
+
+      const {lastCreatedTab} = await browser.storage.local.get('lastCreatedTab');
+      lastCreatedTab.id.should.equal(createdTab.id);
+    });
   });
 });
+```
+
+
+You can find the example in the `test` directory and also execute it:
+
+```
+npm install
+npm test
 ```
 
 

@@ -1,11 +1,11 @@
 module.exports = () => {
   const _containers = [{
-    color: "blue",
-    colorCode: "#37ADFF",
-    cookieStoreId: "firefox-container-1",
-    icon: "fingerprint",
-    iconUrl: "iconUrl",
-    name: "Personal",
+    color: 'blue',
+    colorCode: '#37ADFF',
+    cookieStoreId: 'firefox-container-1',
+    icon: 'fingerprint',
+    iconUrl: 'iconUrl',
+    name: 'Personal',
   }];
   let _userContextId = 5;
 
@@ -14,10 +14,10 @@ module.exports = () => {
       browser.contextualIdentities.create.callsFake(async container => {
         const newContainer = {
           color: container.color,
-          colorCode: "#ffffff",
+          colorCode: '#ffffff',
           cookieStoreId: `firefox-container-${_userContextId}`,
           icon: container.icon,
-          iconUrl: "iconUrl",
+          iconUrl: 'iconUrl',
           name: container.name,
         };
         _containers.push(newContainer);

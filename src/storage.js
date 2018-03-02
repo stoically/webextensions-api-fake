@@ -10,14 +10,14 @@ module.exports = () => {
         let result = {};
         if (Array.isArray(key)) {
           key.map(akey => {
-            if (typeof _storage[akey] !== "undefined") {
+            if (typeof _storage[akey] !== 'undefined') {
               result[akey] = _storage[akey];
             }
           });
-        } else if (typeof key === "object") {
+        } else if (typeof key === 'object') {
           // TODO support nested objects
           Object.keys(key).map(oKey => {
-            if (typeof _storage[oKey] !== "undefined") {
+            if (typeof _storage[oKey] !== 'undefined') {
               result[oKey] = _storage[oKey];
             } else {
               result[oKey] = key[oKey];
@@ -29,7 +29,7 @@ module.exports = () => {
         return result;
       });
       browser.storage.local.set.callsFake(async (key, value) => {
-        if (typeof key === "object") {
+        if (typeof key === 'object') {
           // TODO support nested objects
           Object.keys(key).map(oKey => {
             _storage[oKey] = key[oKey];
