@@ -12,12 +12,15 @@ Currently partially supported API fake implementations are:
   * remove
   * query
   * get  
+  * onCreated  
+  * onRemoved
 
 
 * [tabs](https://developer.mozilla.org/Add-ons/WebExtensions/API/tabs)
   * create
   * get
   * query  
+  * onCreated  
 
 
 * [storage](https://developer.mozilla.org/Add-ons/WebExtensions/API/storage)
