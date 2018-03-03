@@ -14,18 +14,18 @@ const firstWeDoThis = async () => {
   await browser.storage.local.set({
     lastCreatedContainer: container.cookieStoreId
   });
-}
+};
 
 const thenWeDoThat = async () => {
   const {lastCreatedContainer} = await browser.storage.local.get('lastCreatedContainer');
   await browser.tabs.create({
     cookieStoreId: lastCreatedContainer
   });
-}
+};
 
 const myFancyFeature = async () => {
   await firstWeDoThis();
   await thenWeDoThat();
-}
+};
 
 myFancyFeature();
