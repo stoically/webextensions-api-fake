@@ -37,6 +37,16 @@ npm install --save-dev webextensions-api-fake
 ```
 
 
+### Usage
+
+```js
+const browserFake = require('webextensions-api-fake');
+const browser = browserFake();
+```
+
+`browser` is now a `sinon-chrome/webextensions` stub with faked api.
+
+
 ### NodeJS Example
 
 Given the following production code for your WebExtension:
