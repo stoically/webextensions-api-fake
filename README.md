@@ -142,6 +142,10 @@ npm install
 npm run example
 ```
 
+### JSDOM
+
+If you want to execute your WebExtensions tests using [JSDOM](https://github.com/jsdom/jsdom), then [`webextensions-jsdom`](https://github.com/stoically/webextensions-jsdom) might be for you.
+
 
 ### API
 
