@@ -18,7 +18,9 @@ class WebExtensionsApiFake {
   }
 
   createBrowser() {
-    return this.sinonChromeApi.create();
+    const browser = this.sinonChromeApi.create();
+    browser.contextMenus = browser.menus;
+    return browser;
   }
 
   fakeApi(browser) {
