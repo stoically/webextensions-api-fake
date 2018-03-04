@@ -7,14 +7,18 @@ const storage = require('./storage');
 
 
 class WebExtensionsApiFake {
-  constructor() {
+  constructor(options = {}) {
     this.contextualIdentities = contextualIdentities();
     this.tabs = tabs();
     this.storage = storage();
+    this.sinonChromeApi = new SinonChromeApi(sinonChromeWebExtensionsConfig, {
+      sinon: options.sinon ? options.sinon : undefined
+    });
+    this.sinon = this.sinonChromeApi.sinon;
   }
 
   createBrowser() {
-    return new SinonChromeApi(sinonChromeWebExtensionsConfig).create();
+    return this.sinonChromeApi.create();
   }
 
   fakeApi(browser) {
@@ -25,7 +29,7 @@ class WebExtensionsApiFake {
 }
 
 module.exports = (options = {}) => {
-  const webextensionApiFake = new WebExtensionsApiFake;
+  const webextensionApiFake = new WebExtensionsApiFake(options);
 
   let browser;
   if (!options.browser) {
