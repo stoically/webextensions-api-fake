@@ -5,10 +5,19 @@ module.exports = () => {
 
   return {
     fakeApi(browser) {
-      browser.tabs.create.callsFake(async (tab, fakeOptions = {}) => {
+      browser.tabs.create.callsFake(async (tab, fake = {}) => {
         tab.id = _tabId;
-        _tabs.push(tab);
+        _tabs.push(Object.assign(tab));
         _tabId++;
+
+        if (!fake.options) {
+          fake.options = {};
+        }
+        if (!fake.responses) {
+          fake.responses = {};
+        }
+        fake.responses.tabs = {},
+        fake.responses.webRequest = {};
 
         let _networkTab = false;
         tab.status = 'complete';
@@ -18,11 +27,12 @@ module.exports = () => {
         }
 
         if (browser.tabs.onCreated.addListener.callCount) {
-          browser.tabs.onCreated.addListener.yield(tab);
+          const result = browser.tabs.onCreated.addListener.yield(tab);
+          fake.responses.tabs.onCreated = result;
         }
 
         if (_networkTab) {
-          const webRequest = fakeOptions.webRequest || {};
+          const webRequest = fake.options.webRequest || {};
           const _request = {
             frameId: webRequest.frameId || 0,
             tabId: webRequest.tabId || tab.id,
@@ -30,29 +40,19 @@ module.exports = () => {
             requestId: webRequest.requestId || _requestId++
           };
           if (browser.webRequest.onBeforeRequest.addListener.callCount) {
-            const [promise] = browser.webRequest.onBeforeRequest.addListener.yield(_request);
-
-            if (webRequest.onBeforeRequest && webRequest.onBeforeRequest.callback) {
-              webRequest.onBeforeRequest.callback(promise);
-            }
+            const result = browser.webRequest.onBeforeRequest.addListener.yield(_request);
+            fake.responses.webRequest.onBeforeRequest = result;
           }
 
           if (browser.webRequest.onCompleted.addListener.callCount) {
-            const [promise] = browser.webRequest.onCompleted.addListener.yield(_request);
-
-            if (webRequest.onCompleted && webRequest.onCompleted.callback) {
-              webRequest.onCompleted.callback(promise);
-            }
+            const result = browser.webRequest.onCompleted.addListener.yield(_request);
+            fake.responses.webRequest.onCompleted = result;
           }
 
           if (browser.tabs.onUpdated.addListener.callCount) {
             tab.status = 'complete';
-            const [promise] = browser.tabs.onUpdated.addListener.yield(tab.id, {status: 'complete'}, tab);
-
-            if (fakeOptions.tabs && fakeOptions.tabs.onUpdated &&
-                fakeOptions.tabs.onUpdated.callback) {
-              fakeOptions.tabs.onUpdated.callback(promise);
-            }
+            const result = browser.tabs.onUpdated.addListener.yield(tab.id, {status: 'complete'}, tab);
+            fake.responses.tabs.onUpdated = result;
           }
         }
 
