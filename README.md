@@ -161,8 +161,9 @@ If you want to execute your WebExtensions tests using [JSDOM](https://github.com
 
 #### Exported default function([options])
 
-* *options* `<object>`
-  - *browser* `<object>`, optional, Stubbed version of the WebExtensions API. Defaults to `sinon-chrome/webextensions` if not given
+* *options* `<object>`, optional
+  - *browser* `<object>`, optional, stubbed version of the WebExtensions API. Defaults to `sinon-chrome/webextensions` if not given
+  - *sinon* `<object>`, optional, a sinon instance, if given `sinon-chrome` will use it to create the stub. useful if you run into problems with `sinon.match`
 
 
 Returns a new stubbed `browser` with newly created and applied fakes.
@@ -173,7 +174,11 @@ Returns a new stubbed `browser` with newly created and applied fakes.
 
 ##### Constructor: new WebExtensionsApiFake
 
-##### webExtensionsApiFake.createBrowser()
+##### webExtensionsApiFake.createBrowser([options])
+
+* *options* `<object>`, optional
+  - *sinon* `<object>`, optional, a sinon instance, if given `sinon-chrome` will use it to create the stub. useful if you run into problems with `sinon.match`
+  - *api* `<string>`, optional, if `chrome` is given it will create a `sinon-chrome/extensions` stub instead. note that the api fakes are not compatible with the chrome api and you can't pass it into `fakeApi` (yet, might be possible with [`webextension-polyfill`](https://github.com/mozilla/webextension-polyfill))
 
 Returns a new stubbed `browser` without applied fakes.
 

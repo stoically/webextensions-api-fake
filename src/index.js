@@ -1,12 +1,20 @@
 const SinonChromeApi = require('sinon-chrome/api');
 const sinonChromeWebExtensionsConfig = require('sinon-chrome/config/stable-api-ff.json');
+const sinonChromeChromeExtensionsConfig = require('sinon-chrome/config/stable-api.json');
+
 const apis = require('./apis');
 
 class WebExtensionsApiFake {
   constructor(options = {}) {
     this.apis = apis();
-    this.sinonChromeApi = new SinonChromeApi(sinonChromeWebExtensionsConfig, {
-      sinon: options.sinon ? options.sinon : undefined
+
+    let sinonChromeConfig = sinonChromeWebExtensionsConfig;
+    if (options.api === 'chrome') {
+      sinonChromeConfig = sinonChromeChromeExtensionsConfig;
+    }
+
+    this.sinonChromeApi = new SinonChromeApi(sinonChromeConfig, {
+      sinon: options.sinon || undefined
     });
     this.sinon = this.sinonChromeApi.sinon;
   }
