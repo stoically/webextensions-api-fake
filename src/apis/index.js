@@ -1,8 +1,17 @@
-module.exports = {
-  contextualIdentities: require('./contextualIdentities'),
-  extension: require('./extension'),
-  runtime: require('./runtime'),
-  storage: require('./storage'),
-  tabs: require('./tabs'),
-  windows: require('./windows'),
+const contextualIdentities = require('./contextualIdentities');
+const extension = require('./extension');
+const runtime = require('./runtime');
+const storage = require('./storage');
+const tabs = require('./tabs');
+const windows = require('./windows');
+
+module.exports = () => {
+  return {
+    contextualIdentities: contextualIdentities(),
+    extension: extension(),
+    runtime: runtime(),
+    storage: storage(),
+    tabs: tabs(),
+    windows: windows(),
+  };
 };

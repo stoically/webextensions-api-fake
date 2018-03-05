@@ -21,8 +21,7 @@ describe('Useful WebExtension', () => {
 
   describe('My Fancy Feature which is executed on load', () => {
     it('should work', async () => {
-      browser.tabs.create.should.have.been.calledWith({
-        id: sinon.match.number,
+      browser.tabs.create.should.have.been.calledWithMatch({
         cookieStoreId: sinon.match.string
       });
       const tabs = await browser.tabs.query({});

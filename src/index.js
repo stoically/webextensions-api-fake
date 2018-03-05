@@ -4,15 +4,7 @@ const apis = require('./apis');
 
 class WebExtensionsApiFake {
   constructor(options = {}) {
-    this.apis = {
-      contextualIdentities: apis.contextualIdentities(),
-      extension: apis.extension(),
-      runtime: apis.runtime(),
-      storage: apis.storage(),
-      tabs: apis.tabs(),
-      windows: apis.windows(),
-    };
-
+    this.apis = apis();
     this.sinonChromeApi = new SinonChromeApi(sinonChromeWebExtensionsConfig, {
       sinon: options.sinon ? options.sinon : undefined
     });
