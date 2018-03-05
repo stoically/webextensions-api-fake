@@ -1,16 +1,18 @@
 const SinonChromeApi = require('sinon-chrome/api');
 const sinonChromeWebExtensionsConfig = require('sinon-chrome/config/stable-api-ff.json');
-
-const contextualIdentities = require('./contextualIdentities');
-const tabs = require('./tabs');
-const storage = require('./storage');
-
+const apis = require('./apis');
 
 class WebExtensionsApiFake {
   constructor(options = {}) {
-    this.contextualIdentities = contextualIdentities();
-    this.tabs = tabs();
-    this.storage = storage();
+    this.apis = {
+      contextualIdentities: apis.contextualIdentities(),
+      extension: apis.extension(),
+      runtime: apis.runtime(),
+      storage: apis.storage(),
+      tabs: apis.tabs(),
+      windows: apis.windows(),
+    };
+
     this.sinonChromeApi = new SinonChromeApi(sinonChromeWebExtensionsConfig, {
       sinon: options.sinon ? options.sinon : undefined
     });
@@ -24,9 +26,12 @@ class WebExtensionsApiFake {
   }
 
   fakeApi(browser) {
-    this.contextualIdentities.fakeApi(browser);
-    this.tabs.fakeApi(browser);
-    this.storage.fakeApi(browser);
+    this.apis.contextualIdentities.fakeApi(browser);
+    this.apis.extension.fakeApi(browser);
+    this.apis.runtime.fakeApi(browser);
+    this.apis.storage.fakeApi(browser);
+    this.apis.tabs.fakeApi(browser);
+    this.apis.windows.fakeApi(browser);
   }
 }
 
