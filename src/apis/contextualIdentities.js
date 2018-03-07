@@ -43,41 +43,58 @@ module.exports = () => {
 
   return {
     fakeApi(browser) {
-      browser.contextualIdentities.create.callsFake(async container => {
-        const newContainer = {
-          color: container.color,
-          colorCode: _containerColors[container.color],
-          cookieStoreId: `firefox-container-${_userContextId}`,
-          icon: container.icon,
-          iconUrl: `resource://usercontext-content/${container.icon}.svg`,
-          name: container.name,
-        };
-        _containers.push(newContainer);
-        _userContextId++;
+      const contextualIdentities = {
+        async create(container) {
+          const newContainer = {
+            color: container.color,
+            colorCode: _containerColors[container.color],
+            cookieStoreId: `firefox-container-${_userContextId}`,
+            icon: container.icon,
+            iconUrl: `resource://usercontext-content/${container.icon}.svg`,
+            name: container.name,
+          };
+          _containers.push(newContainer);
+          _userContextId++;
 
-        if (browser.contextualIdentities.onCreated.addListener.callCount) {
-          browser.contextualIdentities.onCreated.addListener.yield(newContainer);
+          if (browser.contextualIdentities.onCreated.addListener.callCount) {
+            browser.contextualIdentities.onCreated.addListener.yield(newContainer);
+          }
+
+          return newContainer;
+        },
+
+        async remove(cookieStoreId) {
+          const containerIndex = _containers.findIndex(container =>
+            container.cookieStoreId === cookieStoreId
+          );
+          const container = Object.assign({}, _containers[containerIndex]);
+          _containers.splice(containerIndex, 1);
+
+          if (browser.contextualIdentities.onRemoved.addListener.callCount) {
+            browser.contextualIdentities.onRemoved.addListener.yield(container);
+          }
+        },
+
+        async query() {
+          return _containers;
+        },
+
+        async get(cookieStoreId) {
+          return _containers.filter(container => container.cookieStoreId === cookieStoreId);
         }
+      };
 
-        return newContainer;
-      });
-      browser.contextualIdentities.remove.callsFake(async cookieStoreId => {
-        const containerIndex = _containers.findIndex(container =>
-          container.cookieStoreId === cookieStoreId
-        );
-        const container = Object.assign({}, _containers[containerIndex]);
-        _containers.splice(containerIndex, 1);
+      browser.contextualIdentities.create.callsFake(contextualIdentities.create);
+      browser.contextualIdentities._create = contextualIdentities.create;
 
-        if (browser.contextualIdentities.onRemoved.addListener.callCount) {
-          browser.contextualIdentities.onRemoved.addListener.yield(container);
-        }
-      });
-      browser.contextualIdentities.query.callsFake(async () => {
-        return _containers;
-      });
-      browser.contextualIdentities.get.callsFake(async cookieStoreId => {
-        return _containers.filter(container => container.cookieStoreId === cookieStoreId);
-      });
+      browser.contextualIdentities.remove.callsFake(contextualIdentities.remove);
+      browser.contextualIdentities._remove = contextualIdentities.remove;
+
+      browser.contextualIdentities.query.callsFake(contextualIdentities.query);
+      browser.contextualIdentities._query = contextualIdentities.query;
+
+      browser.contextualIdentities.get.callsFake(contextualIdentities.get);
+      browser.contextualIdentities._get = contextualIdentities.get;
     }
   };
 };

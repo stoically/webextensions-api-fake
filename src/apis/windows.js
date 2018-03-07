@@ -1,9 +1,14 @@
 module.exports = () => {
   return {
     fakeApi(browser) {
-      browser.windows.getCurrent.callsFake(async () => {
-        return {};
-      });
+      const windows = {
+        async getCurrent() {
+          return {};
+        }
+      };
+      
+      browser.windows.getCurrent.callsFake(windows.getCurrent);
+      browser.windows._getCurrent = windows.getCurrent;
     }
   };
 };

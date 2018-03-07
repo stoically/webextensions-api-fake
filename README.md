@@ -9,18 +9,20 @@ Currently partially supported API fake implementations are:
 
 * [contextualIdentities](https://developer.mozilla.org/Add-ons/WebExtensions/API/contextualIdentities)
   * create
+    * triggers: onCreated
   * remove
+    * triggers: onRemoved
   * query
-  * get  
-  * onCreated  
-  * onRemoved
+  * get
 
 
 * [tabs](https://developer.mozilla.org/Add-ons/WebExtensions/API/tabs)
   * create
+    * triggers: onCreated. If `url` is given that doesn't start with `about:` or `moz-ext:`: webRequest.onBeforeRequest, webRequest.onCompleted, onUpdated
+  * update
+    * triggers: If `url` is given that doesn't start with `about:` or `moz-ext:`: webRequest.onBeforeRequest, webRequest.onCompleted, onUpdated
   * get
   * query  
-  * onCreated  
 
 
 * [storage](https://developer.mozilla.org/Add-ons/WebExtensions/API/storage)
@@ -28,6 +30,9 @@ Currently partially supported API fake implementations are:
     * get
     * remove
     * set  
+
+
+Faked API methods are directly available with underscore prefix. E.g. `browser.tabs._create` exposes the `browser.tabs.create` fake. This can be useful to trigger fake behavior without polluting its sinon call history.
 
 
 ### Installation
