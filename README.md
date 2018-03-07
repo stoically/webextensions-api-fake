@@ -18,9 +18,15 @@ Currently partially supported API fake implementations are:
 
 * [tabs](https://developer.mozilla.org/Add-ons/WebExtensions/API/tabs)
   * create
-    * triggers: onCreated. If `url` is given that doesn't start with `about:` or `moz-ext:`: webRequest.onBeforeRequest, webRequest.onCompleted, onUpdated
+    * triggers: `onCreated`. If `url` is given that doesn't start with `about:` or `moz-ext:`: `webRequest.onBeforeRequest`, `webRequest.onCompleted`, `onUpdated`
+    * special fake parameter: you can pass an object as second parameter with the following properties
+      * *options* `<object>`, optional
+        * *webRequest* `<object>`, optional, lets you overwrite the object properties for the request that triggers `webRequest.onBeforeRequest`: `frameId`, `tabId`, `url`, `requestId`
+      * *responses* `<object>`, optional, will get filled with the following structure if given
+        * *webRequest* `<object>`, contains results of the `yield` from `onBeforeRequest` and `onCompleted` as properties
+        * *tabs* `<object>`, contains results of the `yield` from `onCreated` and `onUpdated`  as properties
   * update
-    * triggers: If `url` is given that doesn't start with `about:` or `moz-ext:`: webRequest.onBeforeRequest, webRequest.onCompleted, onUpdated
+    * triggers: If `url` is given that doesn't start with `about:` or `moz-ext:`: `webRequest.onBeforeRequest`, `webRequest.onCompleted`, `onUpdated`
   * get
   * query  
 
