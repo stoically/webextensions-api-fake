@@ -112,7 +112,7 @@ module.exports = () => {
           const _request = {
             frameId: fakeWebRequestOptions.frameId || 0,
             tabId: fakeWebRequestOptions.tabId || tab.id,
-            url: fakeWebRequestOptions.tabUrl || url,
+            url: fakeWebRequestOptions.url || url,
             requestId: fakeWebRequestOptions.requestId || _requestId++
           };
           if (browser.webRequest.onBeforeRequest.addListener.callCount) {
