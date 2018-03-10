@@ -101,6 +101,9 @@ module.exports = () => {
         async query(query) {
           const tabs = _tabs.filter(tab => {
             return Object.keys(query).every(key => {
+              if (key === 'currentWindow') {
+                return (tab.windowId === browser.windows.WINDOW_ID_CURRENT) === query[key];
+              }
               return tab[key] === query[key];
             });
           });
