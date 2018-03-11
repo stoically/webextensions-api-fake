@@ -1,21 +1,68 @@
 module.exports = () => {
   const _tabs = [];
   let _tabId = 1;
-  let _requestId = 1;
+  let _index = -1;
+  let _requestId = 0;
+  let _requests = {};
+  let _redirects = {};
 
   return {
     fakeApi(browser) {
       const _tabDefaults = {
         active: true,
+        audible: false,
         cookieStoreId: 'firefox-default',
-        openInReaderMode: false,
+        discarded: false,
+        height: 600,
+        hidden: false,
+        highlighted: true,
+        incognito: false,
+        isArticle: undefined,
+        isInReaderMode: false,
+        mutedInfo: {
+          muted: false
+        },
         pinned: false,
+        sharingState: {
+          camera: false,
+          microphone: false,
+          screen: undefined
+        },
+        status: 'complete',
+        title: 'New Tab',
+        url: 'about:blank',
+        width: 800,
         windowId: browser.windows.WINDOW_ID_CURRENT
       };
+      const _requestDefaults = {
+        documentUrl: undefined,
+        frameAncestors: [],
+        frameId: 0,
+        ip: null,
+        method: 'GET',
+        originUrl: undefined,
+        parentFrameId: -1,
+        proxyInfo: null,
+        type: 'main_frame'
+      };
+
       const tabs = {
         async create(createProperties, fake = {}) {
-          const tab = Object.assign({}, _tabDefaults, createProperties);
-          tab.id = _tabId;
+          if (typeof createProperties !== 'object') {
+            throw new Error('Incorrect argument types for tabs.create.');
+          }
+          const tab = {
+            id: _tabId,
+            lastAccessed: new Date().getTime()
+          };
+          Object.assign(tab, _tabDefaults, createProperties);
+          if (createProperties.openInReaderMode) {
+            tab.isInReaderMode = true;
+            delete tab.openInReaderMode;
+          }
+          if (typeof createProperties.index === 'undefined') {
+            tab.index = ++_index;
+          }
           _tabs.push(tab);
           _tabId++;
 
@@ -30,8 +77,7 @@ module.exports = () => {
 
           let _networkTab = false;
           let promises = [];
-          const url = tab.url;
-          tab.status = 'complete';
+          let url = tab.url;
           if (tab.url && !tab.url.startsWith('about:') && !tab.url.startsWith('moz-ext:')) {
             _networkTab = true;
             tab.status = 'loading';
@@ -46,7 +92,8 @@ module.exports = () => {
 
           if (_networkTab) {
             const fakeWebRequestOptions = fake.options.webRequest || {};
-            const requestPromises = await tabs._fakeWebRequest(tab, fake, url, browser, fakeWebRequestOptions);
+            const fakeWebRequestRedirects = fake.options.webRequestRedirects || [];
+            const requestPromises = await tabs._fakeWebRequest(tab, fake, url, fakeWebRequestOptions, fakeWebRequestRedirects);
             promises = promises.concat(requestPromises);
           }
 
@@ -75,11 +122,12 @@ module.exports = () => {
           if (updateProperties.url &&
               !updateProperties.url.startsWith('about:') &&
               !updateProperties.url.startsWith('moz-ext:')) {
-            const url = tab.url;
+            let url = tab.url;
             Object.assign(tab, updateProperties, {url});
             tab.status = 'loading';
             const fakeWebRequestOptions = fake.options.webRequest || {};
-            promises = await tabs._fakeWebRequest(tab, fake, updateProperties.url, browser, fakeWebRequestOptions);
+            const fakeWebRequestRedirects = fake.options.webRequestRedirects || [];
+            promises = await tabs._fakeWebRequest(tab, fake, updateProperties.url, fakeWebRequestOptions, fakeWebRequestRedirects);
           } else {
             Object.assign(tab, updateProperties);
           }
@@ -110,40 +158,158 @@ module.exports = () => {
           return tabs;
         },
 
-        async _fakeWebRequest (tab, fake, url, browser, fakeWebRequestOptions) {
+        async _fakeWebRequest (tab, fake, url, fakeWebRequestOptions, fakeRedirects) {
           let promises = [];
-          const _request = {
-            frameId: fakeWebRequestOptions.frameId || 0,
-            tabId: fakeWebRequestOptions.tabId || tab.id,
-            url: fakeWebRequestOptions.url || url,
-            requestId: fakeWebRequestOptions.requestId || _requestId++
-          };
-          if (browser.webRequest.onBeforeRequest.addListener.callCount) {
-            const result = browser.webRequest.onBeforeRequest.addListener.yield(_request);
-            fake.responses.webRequest.onBeforeRequest = result;
-            await Promise.all(result);
+
+          if (browser.tabs.onUpdated.addListener.callCount) {
+            const result = browser.tabs.onUpdated.addListener.yield(tab.id, {
+              status: tab.status
+            }, tab);
+            if (!fake.responses.tabs.onUpdated) {
+              fake.responses.tabs.onUpdated = [];
+            }
+            if (Array.isArray(result)) {
+              fake.responses.tabs.onUpdated = fake.responses.tabs.onUpdated.concat(result);
+              await Promise.all(result);
+            }
             promises = promises.concat(result);
           }
 
-          tab.status = 'complete';
-          tab.url = url;
+          const request = Object.assign({}, _requestDefaults, {
+            tabId: tab.id,
+            timeStamp: new Date().getTime(),
+            url: url,
+          }, fakeWebRequestOptions);
+          if (!request.requestId) {
+            request.requestId = ++_requestId;
+          }
+          if (!_requests[tab.id]) {
+            _requests[tab.id] = {
+              last: request,
+              requests: [request]
+            };
+          } else {
+            _requests[tab.id].last = request;
+            _requests[tab.id].requests.push(request);
+          }
+          fake.responses.webRequest.request = request;
+          if (browser.webRequest.onBeforeRequest.addListener.callCount) {
+            const result = browser.webRequest.onBeforeRequest.addListener.yield(request);
+            if (!fake.responses.webRequest.onBeforeRequest) {
+              fake.responses.webRequest.onBeforeRequest = [];
+            }
+            if (Array.isArray(result)) {
+              fake.responses.webRequest.onBeforeRequest =
+                fake.responses.webRequest.onBeforeRequest.concat(result);
+              promises = promises.concat(result);
+            }
+            if (!fakeRedirects.length && !_redirects[url]) {
+              await Promise.all(result);
+            } else {
+              let redirectPromises = [];
+              const redirects = _redirects[url] || fakeRedirects;
+              for (const redirectUrl of redirects) {
+                const redirectRequest = Object.assign({}, request, {
+                  url: redirectUrl
+                });
+                const result = browser.webRequest.onBeforeRequest.addListener.yield(redirectRequest);
+                if (Array.isArray(result)) {
+                  fake.responses.webRequest.onBeforeRequest =
+                    fake.responses.webRequest.onBeforeRequest.concat(result);
+                  redirectPromises = redirectPromises.concat(result);
+                }
+                url = redirectUrl;
+              }
+              promises = promises.concat(redirectPromises);
+              await Promise.all(promises);
+            }
+          }
 
           if (browser.webRequest.onCompleted.addListener.callCount) {
-            const result = browser.webRequest.onCompleted.addListener.yield(_request);
+            const result = browser.webRequest.onCompleted.addListener.yield(request);
             fake.responses.webRequest.onCompleted = result;
             await Promise.all(result);
             promises = promises.concat(result);
           }
 
+          tab.url = url;
+
           if (browser.tabs.onUpdated.addListener.callCount) {
-            const result = browser.tabs.onUpdated.addListener.yield(tab.id, {status: 'complete'}, tab);
-            fake.responses.tabs.onUpdated = result;
-            await Promise.all(result);
+            const result = browser.tabs.onUpdated.addListener.yield(tab.id, {
+              status: tab.status,
+              url: tab.url
+            }, tab);
+            if (!fake.responses.tabs.onUpdated) {
+              fake.responses.tabs.onUpdated = [];
+            }
+            if (Array.isArray(result)) {
+              fake.responses.tabs.onUpdated = fake.responses.tabs.onUpdated.concat(result);
+              await Promise.all(result);
+            }
+            promises = promises.concat(result);
+          }
+
+          tab.status = 'complete';
+
+          if (browser.tabs.onUpdated.addListener.callCount) {
+            const result = browser.tabs.onUpdated.addListener.yield(tab.id, {
+              status: tab.status
+            }, tab);
+            if (!fake.responses.tabs.onUpdated) {
+              fake.responses.tabs.onUpdated = [];
+            }
+            if (Array.isArray(result)) {
+              fake.responses.tabs.onUpdated = fake.responses.tabs.onUpdated.concat(result);
+              await Promise.all(result);
+            }
             promises = promises.concat(result);
           }
 
           return promises;
-        }
+        },
+
+        async _redirect(tabId, fakeRedirects = [], fakeWebRequest = {}) {
+          if (!Array.isArray(fakeRedirects) || !fakeRedirects.length) {
+            throw new Error('redirects required for redirect');
+          }
+          const tab = _tabs[_tabs.findIndex(tab => tab.id === tabId)];
+          tab.url = 'about:blank';
+          let promises = [];
+          let finalUrl;
+          for (const url of fakeRedirects) {
+            let request = _requestDefaults;
+            if (_requests[tab.id]) {
+              request = _requests[tab.id].last;
+            }
+            request = Object.assign({}, request, {
+              timeStamp: new Date().getTime(),
+            }, fakeWebRequest);
+            if (!request.requestId) {
+              request.requestId = ++_requestId;
+            }
+            request.tabId = tab.id;
+            request.url = url;
+            if (browser.webRequest.onBeforeRequest.addListener.callCount) {
+              const result = browser.webRequest.onBeforeRequest.addListener.yield(request);
+              if (Array.isArray(result)) {
+                promises = promises.concat(result);
+              }
+            }
+            finalUrl = url;
+          }
+
+          await Promise.all(promises);
+          tab.url = finalUrl;
+          return promises;
+        },
+
+        _registerRedirects(targetUrl, redirectUrls) {
+          _redirects[targetUrl] = redirectUrls;
+        },
+
+        _unregisterRedirects(targetUrl) {
+          delete _redirects[targetUrl];
+        },
       };
 
       browser.tabs.create.callsFake(tabs.create);
@@ -157,6 +323,13 @@ module.exports = () => {
 
       browser.tabs.query.callsFake(tabs.query);
       browser.tabs._query = tabs.query;
+
+      browser.tabs._redirect = tabs._redirect;
+      browser.tabs._lastRequestId = () => {
+        return _requestId;
+      };
+      browser.tabs._registerRedirects = tabs._registerRedirects;
+      browser.tabs._unregisterRedirects = tabs._unregisterRedirects;
     }
   };
 };

@@ -4,43 +4,6 @@ When testing [WebExtensions](https://developer.mozilla.org/Add-ons/WebExtensions
 
 This package depends on [sinon](https://github.com/sinonjs/sinon) and [sinon-chrome](https://github.com/acvetkov/sinon-chrome) to have the whole `browser` WebExtension API available as `sinon stubs`. You can pass in your own stubbed version of the `browser`.
 
-
-Currently partially supported API fake implementations are:
-
-* [contextualIdentities](https://developer.mozilla.org/Add-ons/WebExtensions/API/contextualIdentities)
-  * create
-    * triggers: onCreated
-  * remove
-    * triggers: onRemoved
-  * query
-  * get
-
-
-* [tabs](https://developer.mozilla.org/Add-ons/WebExtensions/API/tabs)
-  * create
-    * triggers: `onCreated`. If `url` is given that doesn't start with `about:` or `moz-ext:`: `webRequest.onBeforeRequest`, `webRequest.onCompleted`, `onUpdated`
-    * special fake parameter: you can pass an object as second parameter with the following properties
-      * *options* `<object>`, optional
-        * *webRequest* `<object>`, optional, lets you overwrite the object properties for the request that triggers `webRequest.onBeforeRequest`: `frameId`, `tabId`, `url`, `requestId`
-      * *responses* `<object>`, optional, will get filled with the following structure if given
-        * *webRequest* `<object>`, contains results of the `yield` from `onBeforeRequest` and `onCompleted` as properties
-        * *tabs* `<object>`, contains results of the `yield` from `onCreated` and `onUpdated`  as properties
-  * update
-    * triggers: If `url` is given that doesn't start with `about:` or `moz-ext:`: `webRequest.onBeforeRequest`, `webRequest.onCompleted`, `onUpdated`
-  * get
-  * query  
-
-
-* [storage](https://developer.mozilla.org/Add-ons/WebExtensions/API/storage)
-  * local
-    * get
-    * remove
-    * set  
-
-
-Faked API methods are directly available with underscore prefix. E.g. `browser.tabs._create` exposes the `browser.tabs.create` fake. This can be useful to trigger fake behavior without polluting its sinon call history.
-
-
 ### Installation
 
 ```
@@ -56,6 +19,58 @@ const browser = browserFake();
 ```
 
 `browser` is now a `sinon-chrome/webextensions` stub with faked api.
+
+
+### API Fake
+
+Currently partially supported API fake implementations based on Firefox57+:
+
+* [contextualIdentities](https://developer.mozilla.org/Add-ons/WebExtensions/API/contextualIdentities)
+  * **create**
+    * triggers: onCreated
+  * **remove**
+    * triggers: onRemoved
+  * **query**
+  * **get**
+
+
+* [tabs](https://developer.mozilla.org/Add-ons/WebExtensions/API/tabs)
+  * **create**
+    * You can pass in any parameter you want to overwrite
+    * triggers: `onCreated`. If `url` is given that doesn't start with `about:` or `moz-ext:`: `webRequest.onBeforeRequest`, `webRequest.onCompleted`, `onUpdated`
+  * **update**
+    * triggers: If `url` is given that doesn't start with `about:` or `moz-ext:`: `webRequest.onBeforeRequest`, `webRequest.onCompleted`, `onUpdated`
+  * **get**
+  * **query**  
+
+  * **\_create** - helper method, same as `create`, but takes a special fake object that you can pass as second parameter with the following properties
+      * *options* `<object>`, optional
+        * *webRequest* `<object>`, optional, lets you overwrite the object properties for the request that triggers `webRequest.onBeforeRequest`, e.g. `requestId`
+        * *webRequestRedirects* `<array>`, optional, triggers `webRequest.onBeforeRequest` again with the given URLs in the array in the order they are listed
+      * *responses* `<object>`, optional, will get filled with the following structure if given
+        * *webRequest* `<object>`, contains results of the call (`yield`) from `onBeforeRequest` and `onCompleted` as properties. Also contains the `request` property which is the object passed into the `onBeforeRequest` call.
+        * *tabs* `<object>`, contains results of the call (`yield`) from `onCreated` and `onUpdated`  as properties
+      * *promises* `<array>`, contains return values of all calls, useful to await Promise.all
+  * **\_redirect** - helper method to trigger `onBeforeRequest` for a tab with already used `request`, imitating a redirect. Will automatically use the last `request` seen for this tab if not overwritten by `webRequest`. Will mutate the stored tabs `url` to the last `url` in the array. Takes the parameters:
+    * *tabId* `<integer>`, required, id of the tab
+    * *redirects* `<array>`, required, triggers `webRequest.onBeforeRequest` with the given URLs in the array in the order they are listed
+    * *webRequest* `<object>`, optional, lets you overwrite `request` parameters
+  * **\_registerRedirects** - helper method to register triggering `onBeforeRequest` for the given redirect urls if the registered `url` is seen in a `tabs.create` or `tabs.update`. Will mutate the tabs url to the last redirect url. Has higher precedence than `webRequestRedirects`
+    * *targetUrl* `<string>`, required, the target url
+    * *redirectUrls* `<array>`, required, the urls for which follow-up `onBeforeRequest` calls are made
+  * **\_unregisterRedirects** - helper method to remove registered redirects for the given target url
+    * *targetUrl* `<string>`, required, the target url
+  * **\_lastRequestId** - helper method to return the last used `requestId`
+
+
+* [storage](https://developer.mozilla.org/Add-ons/WebExtensions/API/storage)
+  * **local**
+    * **get**
+    * **remove**
+    * **set**  
+
+
+Faked API methods are also directly available with underscore prefix. E.g. `browser.tabs._create` exposes the `browser.tabs.create` fake. This can be useful to trigger fake behavior from tests without polluting its sinon call history.
 
 
 ### NodeJS Example
