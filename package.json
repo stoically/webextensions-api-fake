@@ -1,6 +1,6 @@
 {
   "name": "webextensions-api-fake",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "WebExtensions API Fake",
   "main": "src/index.js",
   "repository": {
