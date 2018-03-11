@@ -50,7 +50,7 @@ Currently partially supported API fake implementations based on Firefox57+:
       * *responses* `<object>`, optional, will get filled with the following structure if given
         * *webRequest* `<object>`, contains results of the call (`yield`) from `onBeforeRequest` and `onCompleted` as properties. Also contains the `request` property which is the object passed into the `onBeforeRequest` call.
         * *tabs* `<object>`, contains results of the call (`yield`) from `onCreated` and `onUpdated`  as properties
-      * *promises* `<array>`, contains return values of all calls, useful to await Promise.all
+        * *promises* `<array>`, contains return values of all calls, useful to await Promise.all
   * **\_redirect** - helper method to trigger `onBeforeRequest` for a tab with already used `request`, imitating a redirect. Will automatically use the last `request` seen for this tab if not overwritten by `webRequest`. Will mutate the stored tabs `url` to the last `url` in the array. Takes the parameters:
     * *tabId* `<integer>`, required, id of the tab
     * *redirects* `<array>`, required, triggers `webRequest.onBeforeRequest` with the given URLs in the array in the order they are listed
