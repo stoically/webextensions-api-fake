@@ -26,5 +26,5 @@
   "bugs": {
     "url": "https://github.com/stoically/webextensions-api-fake/issues"
   },
-  "license": "MIT"
+  "license": "MPL-2.0"
 }
