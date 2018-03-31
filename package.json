@@ -1,11 +1,11 @@
 {
   "name": "webextensions-api-fake",
-  "version": "0.3.3",
-  "description": "WebExtensions API Fake",
+  "version": "0.4.0",
+  "description": "In-memory WebExtensions API Fake Implementation for testing purposes",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stoically/webextensions-api-fake.git"
+    "url": "git+https://github.com/webexts/webextensions-api-fake.git"
   },
   "dependencies": {
     "sinon-chrome": "^2.3.1"
@@ -21,10 +21,10 @@
   "scripts": {
     "example": "mocha examples/**/*.test.js"
   },
-  "homepage": "https://github.com/stoically/webextensions-api-fake",
+  "homepage": "https://github.com/webexts/webextensions-api-fake",
   "author": "stoically <stoically@protonmail.com>",
   "bugs": {
-    "url": "https://github.com/stoically/webextensions-api-fake/issues"
+    "url": "https://github.com/webexts/webextensions-api-fake/issues"
   },
   "license": "MPL-2.0"
 }
