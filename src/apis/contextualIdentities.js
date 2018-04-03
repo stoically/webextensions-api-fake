@@ -67,6 +67,9 @@ module.exports = () => {
           const containerIndex = _containers.findIndex(container =>
             container.cookieStoreId === cookieStoreId
           );
+          if (containerIndex === -1) {
+            throw new Error('Couldnt find contextualIdentity');
+          }
           const container = Object.assign({}, _containers[containerIndex]);
           _containers.splice(containerIndex, 1);
 
@@ -75,8 +78,12 @@ module.exports = () => {
           }
         },
 
-        async query() {
-          return _containers;
+        async query(query) {
+          return _containers.filter(container => {
+            return Object.keys(query).every(key => {
+              return container[key] === query[key];
+            });
+          });
         },
 
         async get(cookieStoreId) {

@@ -27,6 +27,7 @@ class WebExtensionsApiFake {
 
   fakeApi(browser) {
     this.apis.contextualIdentities.fakeApi(browser);
+    this.apis.cookies.fakeApi(browser);
     this.apis.extension.fakeApi(browser);
     this.apis.runtime.fakeApi(browser);
     this.apis.storage.fakeApi(browser);
