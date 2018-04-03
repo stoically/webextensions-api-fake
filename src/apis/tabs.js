@@ -170,17 +170,25 @@ module.exports = () => {
         },
 
         async remove(tabId) {
-          const tabIndex = _tabs.findIndex(tab =>
-            tab.id === tabId
-          );
-          if (tabIndex === -1) {
-            throw new Error('Couldnt find contextualIdentity');
-          }
-          const tab = Object.assign({}, _tabs[tabIndex]);
-          _tabs.splice(tabIndex, 1);
+          const removeTab = (tabId) => {
+            const tabIndex = _tabs.findIndex(tab =>
+              tab.id === tabId
+            );
+            if (tabIndex === -1) {
+              throw new Error('Couldnt find contextualIdentity');
+            }
+            const tab = Object.assign({}, _tabs[tabIndex]);
+            _tabs.splice(tabIndex, 1);
 
-          if (browser.tabs.onRemoved.addListener.callCount) {
-            browser.tabs.onRemoved.addListener.yield(tab);
+            if (browser.tabs.onRemoved.addListener.callCount) {
+              browser.tabs.onRemoved.addListener.yield(tab);
+            }
+          };
+
+          if (Array.isArray(tabId)) {
+            tabId.map(id => removeTab(id));
+          } else {
+            removeTab(tabId);
           }
         },
 
@@ -242,6 +250,7 @@ module.exports = () => {
             if (!fakeRedirects.length && !_redirects[url]) {
               await Promise.all(result);
             } else {
+              let lastRedirectUrl = false;
               let redirectPromises = [];
               const redirects = _redirects[url] || fakeRedirects;
               for (let redirectUrl of redirects) {
@@ -249,19 +258,24 @@ module.exports = () => {
                 if (typeof redirectUrl === 'object') {
                   redirectRequest = Object.assign({}, request, redirectUrl.webRequest);
                   redirectRequest.url = redirectUrl.url;
+                  redirectUrl = redirectUrl.url;
                 } else {
                   redirectRequest = Object.assign({}, request, {
                     url: redirectUrl
                   });
                 }
 
+                if (lastRedirectUrl) {
+                  tab.url = lastRedirectUrl;
+                }
                 const result = browser.webRequest.onBeforeRequest.addListener.yield(redirectRequest);
                 if (Array.isArray(result)) {
                   fake.responses.webRequest.onBeforeRequest =
                     fake.responses.webRequest.onBeforeRequest.concat(result);
                   redirectPromises = redirectPromises.concat(result);
                 }
-                url = redirectUrl;
+
+                url = lastRedirectUrl = redirectUrl;
               }
               promises = promises.concat(redirectPromises);
               await Promise.all(promises);
@@ -362,6 +376,7 @@ module.exports = () => {
           }
 
           tab.url = finalUrl;
+          await Promise.all(promises);
           return promises;
         },
 
