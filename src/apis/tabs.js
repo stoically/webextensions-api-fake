@@ -175,7 +175,7 @@ module.exports = () => {
               tab.id === tabId
             );
             if (tabIndex === -1) {
-              throw new Error('Couldnt find contextualIdentity');
+              throw new Error('Couldnt find Tab');
             }
             const tab = Object.assign({}, _tabs[tabIndex]);
             _tabs.splice(tabIndex, 1);

@@ -6,7 +6,7 @@ const apis = require('./apis');
 
 class WebExtensionsApiFake {
   constructor(options = {}) {
-    this.apis = apis();
+    this.apis = apis(options);
 
     let sinonChromeConfig = sinonChromeWebExtensionsConfig;
     if (options.api === 'chrome') {
@@ -29,6 +29,7 @@ class WebExtensionsApiFake {
     this.apis.contextualIdentities.fakeApi(browser);
     this.apis.cookies.fakeApi(browser);
     this.apis.extension.fakeApi(browser);
+    this.apis.i18n.fakeApi(browser);
     this.apis.runtime.fakeApi(browser);
     this.apis.storage.fakeApi(browser);
     this.apis.tabs.fakeApi(browser);

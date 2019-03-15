@@ -40,6 +40,16 @@ Currently supported API fake implementations based on Firefox57+:
   * **remove**
   * **set**
 
+* [i18n](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/i18n)
+  * **getAcceptLanguages**
+    * Returns `['en-US']` by default, can be overwritten by `_setAcceptLanguages`
+  * **getMessage**
+    * Returns results based on the `locales` and `default_locale` passed as [`options`](#exported-default-functionoptions)
+  * **getUILanguage**
+    * Returns `en-US` by default, can be overwritten by `_setUILanguage`
+  * **detectLanguage**
+    * Returns a Promise that resolves to the result of `getUILanguage`
+
 * [tabs](https://developer.mozilla.org/Add-ons/WebExtensions/API/tabs)
   * **create**
     * You can pass in any parameter you want to overwrite
@@ -61,6 +71,12 @@ Currently supported API fake implementations based on Firefox57+:
 Faked API methods are also directly available with underscore prefix. E.g. `browser.tabs._create` exposes the `browser.tabs.create` fake. This can be useful to trigger fake behavior from tests without polluting its sinon call history.
 
 #### Special Fake Methods
+
+* i18n
+  * **\_setAcceptLanguages**
+    * Overwrite the default for `getAcceptLanguages`
+  * **\_setUILanguage**
+    * Overwrite the default for `getUILanguage`
 
 * tabs
   * **\_create** - helper method, same as `create`, but takes a special fake object that you can pass as second parameter with the following properties
@@ -206,6 +222,8 @@ If you want to execute your WebExtensions tests using [JSDOM](https://github.com
 * *options* `<object>`, optional
   - *browser* `<object>`, optional, stubbed version of the WebExtensions API. Defaults to `sinon-chrome/webextensions` if not given
   - *sinon* `<object>`, optional, a sinon instance, if given `sinon-chrome` will use it to create the stub. useful if you run into problems with `sinon.match`
+  - *locales* `<object>`, optional, used for the `i18n.getMessage` fake. Format is `{locale: messages}`. E.g.: `{'en': {'translated': {'message': 'hello world'}}}`
+  - *default_locale* `<string>`, optional, used for the `i18n.getMessage` fake
 
 
 Returns a new stubbed `browser` with newly created and applied fakes.
