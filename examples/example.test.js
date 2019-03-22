@@ -10,7 +10,7 @@ chai.use(sinonChai);
 describe('Useful WebExtension', () => {
   beforeEach(async () => {
     // fake the browser
-    global.browser = browserFake();
+    global.browser = browserFake({sinon});
 
     // execute the production code
     reload('./example.js');

@@ -8,15 +8,15 @@
     "url": "git+https://github.com/webexts/webextensions-api-fake.git"
   },
   "dependencies": {
-    "sinon-chrome": "^2.3.1"
+    "sinon-chrome": "^2.3.2"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^4.18.1",
-    "mocha": "^5.0.1",
+    "chai": "^4.2.0",
+    "eslint": "^5.15.3",
+    "mocha": "^6.0.2",
     "require-reload": "^0.2.2",
-    "sinon": "^4.4.2",
-    "sinon-chai": "^2.14.0"
+    "sinon": "^7.3.0",
+    "sinon-chai": "^3.3.0"
   },
   "scripts": {
     "example": "mocha examples/**/*.test.js"
