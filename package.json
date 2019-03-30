@@ -8,7 +8,7 @@
     "url": "git+https://github.com/webexts/webextensions-api-fake.git"
   },
   "dependencies": {
-    "sinon-chrome": "^2.3.2"
+    "sinon-chrome": "^3.0.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
