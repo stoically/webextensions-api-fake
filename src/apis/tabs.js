@@ -221,7 +221,7 @@ module.exports = () => {
           const request = Object.assign({}, _requestDefaults, {
             tabId: tab.id,
             timeStamp: new Date().getTime(),
-            url: url,
+            url,
           }, fakeWebRequestOptions);
           if (!request.requestId) {
             request.requestId = ++_requestId;
@@ -247,9 +247,10 @@ module.exports = () => {
                 fake.responses.webRequest.onBeforeRequest.concat(result);
               promises = promises.concat(result);
             }
-            if (!fakeRedirects.length && !_redirects[url]) {
+            if (!fake.options.instantRedirects) {
               await Promise.all(result);
-            } else {
+            }
+            if (fakeRedirects.length || _redirects[url]) {
               let lastRedirectUrl = false;
               let redirectPromises = [];
               const redirects = _redirects[url] || fakeRedirects;
@@ -276,6 +277,9 @@ module.exports = () => {
                 }
 
                 url = lastRedirectUrl = redirectUrl;
+                if (!fake.options.instantRedirects) {
+                  await Promise.all(redirectPromises);
+                }
               }
               promises = promises.concat(redirectPromises);
               await Promise.all(promises);

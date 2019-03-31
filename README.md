@@ -85,6 +85,7 @@ Faked API methods are also directly available with underscore prefix. E.g. `brow
         * *webRequestRedirects* `<array>`, optional, triggers `webRequest.onBeforeRequest` again with the given URLs in the array in the order they are listed. Instead of an URL string its possible to pass an object with properties `url` (the url to redirect) and `webRequest` (overwrite request parameters)
         * *webRequestDontYield* `<array>`, optional, given listeners are not triggered, e.g. `onCompleted`
         * *webRequestError* `<boolean>`, optional, if `true` is given `onErrorOccurred` will be triggered instead of `onCompleted`
+        * *instantRedirects* `<boolean>`, optional, if `true` is given redirects will not await the `onBeforeRequest` promise
       * *responses* `<object>`, optional, will get filled with the following structure if given
         * *webRequest* `<object>`, contains results of the call (`yield`) from `onBeforeRequest` and `onCompleted` as properties. Also contains the `request` property which is the object passed into the `onBeforeRequest` call.
         * *tabs* `<object>`, contains results of the call (`yield`) from `onCreated` and `onUpdated`  as properties
