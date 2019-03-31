@@ -55,6 +55,9 @@ module.exports = () => {
             lastAccessed: new Date().getTime()
           };
           Object.assign(tab, _tabDefaults, createProperties);
+          if (!tab.url) {
+            tab.url = 'about:blank';
+          }
           if (createProperties.openInReaderMode) {
             tab.isInReaderMode = true;
             delete tab.openInReaderMode;
@@ -82,7 +85,6 @@ module.exports = () => {
           let url = tab.url;
           if (tab.url && !tab.url.startsWith('about:') && !tab.url.startsWith('moz-ext:')) {
             _networkTab = true;
-            tab.status = 'loading';
             tab.url = 'about:blank';
           }
 
@@ -91,6 +93,8 @@ module.exports = () => {
             fake.responses.tabs.onCreated = result;
             promises = promises.concat(result);
           }
+
+          tab.status = 'loading';
 
           if (_networkTab) {
             const fakeWebRequestOptions = fake.options.webRequest || {};
@@ -102,6 +106,21 @@ module.exports = () => {
               fakeWebRequestRedirects, fakeWebRequestDontYield, fakeWebRequestError
             );
             promises = promises.concat(requestPromises);
+          } else {
+            if (browser.tabs.onUpdated.addListener.callCount) {
+              const result = browser.tabs.onUpdated.addListener.yield(tab.id, {status: tab.status, url: tab.url}, tab);
+              fake.responses.tabs.onUpdated = result;
+              promises = promises.concat(result);
+
+              tab.status = 'complete';
+
+              const resultComplete = browser.tabs.onUpdated.addListener.yield(tab.id, {status: tab.status}, tab);
+              fake.responses.tabs.onUpdated.concat(resultComplete);
+              promises = promises.concat(resultComplete);
+            } else {
+              tab.status = 'complete';
+            }
+
           }
 
           fake.responses.promises = promises;

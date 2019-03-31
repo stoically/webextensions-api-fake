@@ -87,7 +87,7 @@ module.exports = () => {
         },
 
         async get(cookieStoreId) {
-          return _containers.filter(container => container.cookieStoreId === cookieStoreId);
+          return _containers.find(container => container.cookieStoreId === cookieStoreId);
         }
       };
 
