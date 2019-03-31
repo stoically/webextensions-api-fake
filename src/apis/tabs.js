@@ -83,9 +83,9 @@ module.exports = () => {
           let _networkTab = false;
           let promises = [];
           let url = tab.url;
+          tab.url = 'about:blank';
           if (tab.url && !tab.url.startsWith('about:') && !tab.url.startsWith('moz-ext:')) {
             _networkTab = true;
-            tab.url = 'about:blank';
           }
 
           if (browser.tabs.onCreated.addListener.callCount) {
@@ -107,6 +107,7 @@ module.exports = () => {
             );
             promises = promises.concat(requestPromises);
           } else {
+            tab.url = url;
             if (browser.tabs.onUpdated.addListener.callCount) {
               const result = browser.tabs.onUpdated.addListener.yield(tab.id, {status: tab.status, url: tab.url}, tab);
               fake.responses.tabs.onUpdated = result;
