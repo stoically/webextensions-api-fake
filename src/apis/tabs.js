@@ -83,10 +83,10 @@ module.exports = () => {
           let _networkTab = false;
           let promises = [];
           let url = tab.url;
-          tab.url = 'about:blank';
           if (tab.url && !tab.url.startsWith('about:') && !tab.url.startsWith('moz-ext:')) {
             _networkTab = true;
           }
+          tab.url = 'about:blank';
 
           if (browser.tabs.onCreated.addListener.callCount) {
             const result = browser.tabs.onCreated.addListener.yield(tab);
