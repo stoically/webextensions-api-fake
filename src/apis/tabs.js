@@ -95,7 +95,6 @@ module.exports = () => {
           }
 
           tab.status = 'loading';
-
           if (_networkTab) {
             const fakeWebRequestOptions = fake.options.webRequest || {};
             const fakeWebRequestRedirects = fake.options.webRequestRedirects || [];
@@ -119,9 +118,10 @@ module.exports = () => {
               fake.responses.tabs.onUpdated.concat(resultComplete);
               promises = promises.concat(resultComplete);
             } else {
-              tab.status = 'complete';
+              if (createProperties.status === undefined) {
+                tab.status = 'complete';
+              }
             }
-
           }
 
           fake.responses.promises = promises;

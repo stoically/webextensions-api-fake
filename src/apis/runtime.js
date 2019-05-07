@@ -2,7 +2,7 @@ module.exports = () => {
   const mozExtProtocol = 'moz-extension:';
   return {
     fakeApi(browser) {
-      const extension = {
+      const runtime = {
         getURL(path) {
           if (path.startsWith('//')) {
             return `${mozExtProtocol}${path}`;
@@ -11,11 +11,23 @@ module.exports = () => {
             return `${mozExtProtocol}//fake${path}`;
           }
           return `${mozExtProtocol}//fake/${path}`;
+        },
+
+        async getBrowserInfo() {
+          return {
+            'name': 'Firefox',
+            'vendor': 'Mozilla',
+            'version': '51.0',
+            'buildID': '20161018004015'
+          };
         }
       };
 
-      browser.extension.getURL.callsFake(extension.getURL);
-      browser.extension._getURL = extension.getURL;
+      browser.runtime.getURL.callsFake(runtime.getURL);
+      browser.runtime._getURL = runtime.getURL;
+
+      browser.runtime.getBrowserInfo.callsFake(runtime.getBrowserInfo);
+      browser.runtime._getBrowserInfo = runtime.getBrowserInfo;
     }
   };
 };
