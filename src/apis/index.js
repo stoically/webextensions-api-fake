@@ -1,3 +1,4 @@
+const alarms = require('./alarms');
 const contextualIdentities = require('./contextualIdentities');
 const cookies = require('./cookies');
 const extension = require('./extension');
@@ -9,6 +10,7 @@ const windows = require('./windows');
 
 module.exports = options => {
   return {
+    alarms: alarms(),
     contextualIdentities: contextualIdentities(),
     cookies: cookies(),
     extension: extension(),

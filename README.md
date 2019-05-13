@@ -25,6 +25,13 @@ const browser = browserFake();
 
 Currently supported API fake implementations based on Firefox57+:
 
+* [alarms](https://developer.mozilla.org/Add-ons/WebExtensions/API/alarms)
+  * **create**
+  * **get**
+  * **getAll**
+  * **clear**
+  * **clearAll**
+
 * [contextualIdentities](https://developer.mozilla.org/Add-ons/WebExtensions/API/contextualIdentities)
   * **create**
     * triggers: onCreated
