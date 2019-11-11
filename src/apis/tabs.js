@@ -89,7 +89,6 @@ module.exports = () => {
               _networkTab = true;
             }
           }
-          
 
           if (browser.tabs.onCreated.addListener.callCount) {
             const result = browser.tabs.onCreated.addListener.yield(tab);
@@ -108,7 +107,7 @@ module.exports = () => {
               fakeWebRequestRedirects, fakeWebRequestDontYield, fakeWebRequestError
             );
             promises = promises.concat(requestPromises);
-          } else {
+          } else if (tab.url !== url) {
             tab.url = url;
             if (browser.tabs.onUpdated.addListener.callCount) {
               const result = browser.tabs.onUpdated.addListener.yield(tab.id, {status: tab.status, url: tab.url}, tab);
