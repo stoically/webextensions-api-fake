@@ -119,10 +119,8 @@ module.exports = () => {
               const resultComplete = browser.tabs.onUpdated.addListener.yield(tab.id, {status: tab.status}, tab);
               fake.responses.tabs.onUpdated.concat(resultComplete);
               promises = promises.concat(resultComplete);
-            } else {
-              if (createProperties.status === undefined) {
-                tab.status = 'complete';
-              }
+            } else if (createProperties.status === undefined) {
+              tab.status = 'complete';
             }
           }
 
@@ -308,6 +306,20 @@ module.exports = () => {
             }
           }
 
+          if (browser.webRequest.onBeforeSendHeaders.addListener.callCount &&
+            (!fakeDontYield || !fakeDontYield.includes('onBeforeSendHeaders'))) {
+            const result = browser.webRequest.onBeforeSendHeaders.addListener.yield(request);
+            if (!fake.responses.webRequest.onBeforeSendHeaders) {
+              fake.responses.webRequest.onBeforeSendHeaders = [];
+            }
+            if (Array.isArray(result)) {
+              fake.responses.webRequest.onBeforeSendHeaders =
+               fake.responses.webRequest.onBeforeSendHeaders.concat(result);
+              promises = promises.concat(result);
+            }
+            await Promise.all(promises);
+          }
+
           if (!fakeError) {
             if (browser.webRequest.onCompleted.addListener.callCount &&
               (!fakeDontYield || !fakeDontYield.includes('onCompleted'))) {
@@ -408,19 +420,29 @@ module.exports = () => {
 
         async _navigate(tabId, url, fakeWebRequest) {
           const tab = tabs.get(tabId);
-          if (!browser.webRequest.onBeforeRequest.addListener.callCount) {
-            throw new Error('No onBeforeRequest Listeners registered');
-          }
           const request = Object.assign({}, _requestDefaults, {
             tabId,
             url,
             timeStamp: new Date().getTime(),
           }, fakeWebRequest);
 
-          const result = browser.webRequest.onBeforeRequest.addListener.yield(request);
-          await Promise.all(result);
+          if (!request.requestId) {
+            request.requestId = ++_requestId;
+          }
+
+          const results = {};
+          if (browser.webRequest.onBeforeRequest.addListener.callCount) {
+            results.onBeforeRequest = browser.webRequest.onBeforeRequest.addListener.yield(request);
+            await Promise.all(results.onBeforeRequest);
+          }
+
+          if (browser.webRequest.onBeforeSendHeaders.addListener.callCount) {
+            results.onBeforeSendHeaders = browser.webRequest.onBeforeSendHeaders.addListener.yield(request);
+            await Promise.all(results.onBeforeSendHeaders);
+          }
+          
           tab.url = url;
-          return result;
+          return results;
         },
 
         _registerRedirects(targetUrl, redirectUrls) {

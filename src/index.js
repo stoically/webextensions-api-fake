@@ -40,14 +40,7 @@ class WebExtensionsApiFake {
 
 module.exports = (options = {}) => {
   const webextensionApiFake = new WebExtensionsApiFake(options);
-
-  let browser;
-  if (!options.browser) {
-    browser = webextensionApiFake.createBrowser();
-  } else {
-    browser = options.browser;
-  }
-
+  const browser = options.browser || webextensionApiFake.createBrowser();
   webextensionApiFake.fakeApi(browser);
 
   return browser;
