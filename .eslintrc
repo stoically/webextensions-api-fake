@@ -1,28 +1,33 @@
 {
-    "env": {
-        "es6": true,
-        "node": true
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "overrides": [
+    {
+      "files": ["**/*.js"],
+      "extends": "eslint:recommended",
+      "rules": {
+        "indent": ["error", 2],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "require-atomic-updates": 0
+      }
     },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "ecmaVersion": 8
-    },
-    "rules": {
-        "indent": [
-            "error",
-            2
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ]
+    {
+      "files": ["**/*.d.ts"],
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended",
+        "prettier/@typescript-eslint"
+      ],
+      "parserOptions": {
+        "parser": "@typescript-eslint/parser"
+      }
     }
+  ]
 }

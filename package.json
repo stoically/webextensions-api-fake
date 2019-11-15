@@ -3,20 +3,29 @@
   "version": "0.9.1",
   "description": "In-memory WebExtensions API Fake Implementation for testing purposes",
   "main": "src/index.js",
+  "types": "src",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/webexts/webextensions-api-fake.git"
   },
   "dependencies": {
-    "sinon-chrome": "^3.0.0"
+    "sinon-chrome": "^3.0.1"
   },
   "devDependencies": {
+    "@types/firefox-webext-browser": "^70.0.1",
+    "@types/sinon": "^7.5.0",
+    "@typescript-eslint/eslint-plugin": "^2.7.0",
+    "@typescript-eslint/parser": "^2.7.0",
     "chai": "^4.2.0",
-    "eslint": "^5.15.3",
-    "mocha": "^6.0.2",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "mocha": "^6.2.2",
+    "prettier": "^1.19.1",
     "require-reload": "^0.2.2",
-    "sinon": "^7.3.0",
-    "sinon-chai": "^3.3.0"
+    "sinon": "^7.5.0",
+    "sinon-chai": "^3.3.0",
+    "typescript": "^3.7.2"
   },
   "scripts": {
     "example": "mocha examples/**/*.test.js"
@@ -26,5 +35,10 @@
   "bugs": {
     "url": "https://github.com/webexts/webextensions-api-fake/issues"
   },
-  "license": "MPL-2.0"
+  "license": "MPL-2.0",
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "singleQuote": true
+  }
 }
