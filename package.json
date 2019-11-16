@@ -9,10 +9,14 @@
     "url": "git+https://github.com/webexts/webextensions-api-fake.git"
   },
   "dependencies": {
-    "sinon-chrome": "^3.0.1"
+    "webextensions-schema": "^0.1.4"
+  },
+  "peerDependencies": {
+    "sinon": "^7.5.0"
   },
   "devDependencies": {
     "@types/firefox-webext-browser": "^70.0.1",
+    "@types/node": "^12.12.8",
     "@types/sinon": "^7.5.0",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.7.0",
@@ -23,7 +27,6 @@
     "mocha": "^6.2.2",
     "prettier": "^1.19.1",
     "require-reload": "^0.2.2",
-    "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
     "typescript": "^3.7.2"
   },

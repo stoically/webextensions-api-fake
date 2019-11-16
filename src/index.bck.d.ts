@@ -71,39 +71,4 @@ declare namespace browserFake {
   }
 }
 
-declare const browserFake: {
-  (options?: {
-    /*
-     * stubbed version of the WebExtensions API. Defaults to sinon-chrome/webextensions if not given
-     */
-    browser?: browserFake.Browser;
-
-    /*
-     * sinon instance, if given sinon-chrome will use it to create the stub. useful if you run into problems with sinon.match
-     */
-    sinon?: sinon.SinonStatic;
-
-    /*
-     * used for the `i18n.getMessage` fake. Format is {locale: messages}. E.g.: {'en': {'something': {'message': 'hello world'}}}
-     */
-    locales?: {
-      [key: string]: {
-        message: string;
-        description?: string;
-        placeholders?: {
-          [key: string]: {
-            content: string;
-            example?: string;
-          };
-        };
-      };
-    };
-
-    /*
-     * used for the i18n.getMessage fake
-     */
-    default_locale?: string;
-  }): browserFake.Browser;
-};
-
 export = browserFake;
