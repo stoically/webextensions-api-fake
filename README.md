@@ -10,7 +10,7 @@ This package depends on [sinon](https://github.com/sinonjs/sinon) and [webextens
 npm install --save-dev webextensions-api-fake sinon
 ```
 
-**Important**: `sinon` is a peer dependency, so you have to install it, and its @types yourself. That's because it can otherwise lead to unexpected assertion behavior when sinon does `instanceof` checks internally. It also allows to upgrade sinon without the need to bump the version in `webextensions-api-fake`.
+**Important**: `sinon` is a peer dependency, so you have to install it yourself. That's because it can otherwise lead to unexpected assertion behavior when sinon does `instanceof` checks internally. It also allows to upgrade sinon without the need to bump the version in `webextensions-api-fake`.
 
 ### Usage
 
@@ -167,7 +167,7 @@ You could have a test that looks like this (using `mocha`, `sinon-chai`, `chai.s
 _example.test.js_
 
 ```js
-const browserFake = require('webextensions-api-fake');
+const { default: browserFake } = require('webextensions-api-fake');
 const reload = require('require-reload')(require);
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
@@ -248,10 +248,6 @@ Returns a new stubbed `browser` with newly created and applied fakes.
 ##### Constructor: new WebExtensionsApiFake
 
 ##### webExtensionsApiFake.createBrowser([options])
-
-- _options_ `<object>`, optional
-  - _sinon_ `<object>`, optional, a sinon instance, if given `sinon-chrome` will use it to create the stub. useful if you run into problems with `sinon.match`
-  - _api_ `<string>`, optional, if `chrome` is given it will create a `sinon-chrome/extensions` stub instead. note that the api fakes are not compatible with the chrome api and you can't pass it into `fakeApi` (yet, might be possible with [`webextension-polyfill`](https://github.com/mozilla/webextension-polyfill))
 
 Returns a new stubbed `browser` without applied fakes.
 
