@@ -1,9 +1,11 @@
-module.exports = () => {
+import { BrowserFake } from '../types';
+
+export default (): any => {
   const mozExtProtocol = 'moz-extension:';
   return {
-    fakeApi(browser) {
+    fakeApi(browser: BrowserFake): void {
       const runtime = {
-        getURL(path) {
+        getURL(path: string): string {
           if (path.startsWith('//')) {
             return `${mozExtProtocol}${path}`;
           }
@@ -13,14 +15,14 @@ module.exports = () => {
           return `${mozExtProtocol}//fake/${path}`;
         },
 
-        async getBrowserInfo() {
+        async getBrowserInfo(): Promise<any> {
           return {
-            'name': 'Firefox',
-            'vendor': 'Mozilla',
-            'version': '51.0',
-            'buildID': '20161018004015'
+            name: 'Firefox',
+            vendor: 'Mozilla',
+            version: '51.0',
+            buildID: '20161018004015',
           };
-        }
+        },
       };
 
       browser.runtime.getURL.callsFake(runtime.getURL);
@@ -28,6 +30,6 @@ module.exports = () => {
 
       browser.runtime.getBrowserInfo.callsFake(runtime.getBrowserInfo);
       browser.runtime._getBrowserInfo = runtime.getBrowserInfo;
-    }
+    },
   };
 };

@@ -1,11 +1,18 @@
-module.exports = () => {
-  let _alarms = [];
+import { BrowserFake } from '../types';
+
+export default (): any => {
+  const _alarms: any = [];
   return {
-    fakeApi(browser) {
+    fakeApi(browser: BrowserFake): void {
       const alarms = {
-        create(name, alarmInfo) {
-          if ((!name && !alarmInfo) || (typeof name !== 'object' && !alarmInfo)) {
-            throw new Error('Error: Incorrect argument types for alarms.create.');
+        create(name: string, alarmInfo: any): void {
+          if (
+            (!name && !alarmInfo) ||
+            (typeof name !== 'object' && !alarmInfo)
+          ) {
+            throw new Error(
+              'Error: Incorrect argument types for alarms.create.'
+            );
           }
           if (typeof name === 'object') {
             alarmInfo = name;
@@ -14,13 +21,17 @@ module.exports = () => {
             name = name ? name : '';
           }
 
-          if (alarmInfo.periodInMinutes && !alarmInfo.when && !alarmInfo.delayInMinutes) {
+          if (
+            alarmInfo.periodInMinutes &&
+            !alarmInfo.when &&
+            !alarmInfo.delayInMinutes
+          ) {
             const alarm = {
               name,
-              scheduledTime: Date.now() + (alarmInfo.periodInMinutes * 60 * 1000),
+              scheduledTime: Date.now() + alarmInfo.periodInMinutes * 60 * 1000,
               periodInMinutes: null,
             };
-            _alarms[name] = {alarm};
+            _alarms[name] = { alarm };
 
             _alarms[name].interval = setInterval(() => {
               if (!_alarms[name]) {
@@ -29,52 +40,66 @@ module.exports = () => {
               if (browser.alarms.onAlarm.addListener.callCount) {
                 browser.alarms.onAlarm.addListener.yield(_alarms[name].alarm);
               }
-              _alarms[name].alarm.scheduledTime = Date.now() + (alarmInfo.periodInMinutes * 60 * 1000);
+              _alarms[name].alarm.scheduledTime =
+                Date.now() + alarmInfo.periodInMinutes * 60 * 1000;
             }, alarmInfo.periodInMinutes * 60 * 1000);
           } else {
             const alarm = {
               name,
-              scheduledTime: alarmInfo.when ? alarmInfo.when : Date.now() + (alarmInfo.delayInMinutes * 60 * 1000),
+              scheduledTime: alarmInfo.when
+                ? alarmInfo.when
+                : Date.now() + alarmInfo.delayInMinutes * 60 * 1000,
               periodInMinutes: null,
             };
-            _alarms[name] = {alarm};
-            _alarms[name].timeout = setTimeout(() => {
-              if (!_alarms[name]) {
-                return;
-              }
-              if (browser.alarms.onAlarm.addListener.callCount) {
-                browser.alarms.onAlarm.addListener.yield(_alarms[name].alarm);
-              }
-              if (!alarmInfo.periodInMinutes) {
-                delete _alarms[name];
-              } else {
-                _alarms[name].alarm.scheduledTime = Date.now() + (_alarms[name].alarm.periodInMinutes * 60 * 1000);
-                _alarms[name].interval = setInterval(() => {
-                  if (!_alarms[name]) {
-                    return;
-                  }
-                  if (browser.alarms.onAlarm.addListener.callCount) {
-                    browser.alarms.onAlarm.addListener.yield(_alarms[name].alarm);
-                  }
-                  _alarms[name].alarm.scheduledTime = Date.now() + (_alarms[name].alarm.periodInMinutes * 60 * 1000);
-                }, alarmInfo.periodInMinutes * 60 * 1000);
-              }
-            }, alarmInfo.when ? alarmInfo.when - Date.now() : alarmInfo.delayInMinutes * 60 * 1000);
+            _alarms[name] = { alarm };
+            _alarms[name].timeout = setTimeout(
+              () => {
+                if (!_alarms[name]) {
+                  return;
+                }
+                if (browser.alarms.onAlarm.addListener.callCount) {
+                  browser.alarms.onAlarm.addListener.yield(_alarms[name].alarm);
+                }
+                if (!alarmInfo.periodInMinutes) {
+                  delete _alarms[name];
+                } else {
+                  _alarms[name].alarm.scheduledTime =
+                    Date.now() +
+                    _alarms[name].alarm.periodInMinutes * 60 * 1000;
+                  _alarms[name].interval = setInterval(() => {
+                    if (!_alarms[name]) {
+                      return;
+                    }
+                    if (browser.alarms.onAlarm.addListener.callCount) {
+                      browser.alarms.onAlarm.addListener.yield(
+                        _alarms[name].alarm
+                      );
+                    }
+                    _alarms[name].alarm.scheduledTime =
+                      Date.now() +
+                      _alarms[name].alarm.periodInMinutes * 60 * 1000;
+                  }, alarmInfo.periodInMinutes * 60 * 1000);
+                }
+              },
+              alarmInfo.when
+                ? alarmInfo.when - Date.now()
+                : alarmInfo.delayInMinutes * 60 * 1000
+            );
           }
         },
 
-        async get(name) {
+        async get(name: string): Promise<any> {
           if (!_alarms[name]) {
             return;
           }
           return _alarms[name].alarm;
         },
 
-        async getAll() {
-          return _alarms.map(alarm => alarm.alarm);
+        async getAll(): Promise<any> {
+          return _alarms.map((alarm: any) => alarm.alarm);
         },
 
-        async clear(name) {
+        async clear(name: string): Promise<any> {
           if (!_alarms[name]) {
             return false;
           }
@@ -83,15 +108,15 @@ module.exports = () => {
           return delete _alarms[name];
         },
 
-        async clearAll() {
+        async clearAll(): Promise<boolean> {
           if (!_alarms.length) {
             return false;
           }
-          _alarms.map(alarm => {
+          _alarms.map((alarm: any) => {
             alarms.clear(alarm.alarm.name);
           });
           return true;
-        }
+        },
       };
 
       browser.alarms.create.callsFake(alarms.create);
@@ -103,7 +128,7 @@ module.exports = () => {
       browser.alarms.get.callsFake(alarms.get);
       browser.alarms._get = alarms.get;
       browser.alarms.getAll.callsFake(alarms.getAll);
-      browser.alarms._getAll = alarms.getURL;
-    }
+      browser.alarms._getAll = alarms.getAll;
+    },
   };
 };

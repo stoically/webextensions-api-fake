@@ -2,36 +2,41 @@
   "name": "webextensions-api-fake",
   "version": "0.9.1",
   "description": "In-memory WebExtensions API Fake Implementation for testing purposes",
-  "main": "src/index.js",
-  "types": "src",
+  "main": "dist/index.js",
+  "types": "dist",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/webexts/webextensions-api-fake.git"
   },
   "dependencies": {
-    "webextensions-schema": "^0.1.4"
+    "webextensions-api-mock": "^0.2.4"
   },
   "peerDependencies": {
     "sinon": "^7.5.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.5",
     "@types/firefox-webext-browser": "^70.0.1",
-    "@types/node": "^12.12.8",
-    "@types/sinon": "^7.5.0",
-    "@typescript-eslint/eslint-plugin": "^2.7.0",
-    "@typescript-eslint/parser": "^2.7.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.12",
+    "@types/sinon": "^7.5.1",
+    "@types/sinon-chai": "^3.2.3",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
     "chai": "^4.2.0",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
+    "eslint": "^6.7.0",
+    "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.1",
     "mocha": "^6.2.2",
     "prettier": "^1.19.1",
     "require-reload": "^0.2.2",
+    "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "example": "mocha examples/**/*.test.js"
+    "build": "tsc -p tsconfig.build.json",
+    "example": "npm run build && mocha examples/**/*.test.js"
   },
   "homepage": "https://github.com/webexts/webextensions-api-fake",
   "author": "stoically <stoically@protonmail.com>",

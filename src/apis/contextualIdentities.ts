@@ -1,50 +1,57 @@
-module.exports = () => {
+import { BrowserFake } from '../types';
+
+export default (): any => {
   // default firefox containers
-  const _containerColors = {
-    'blue': '#37adff',
-    'turquoise': '#00c79a',
-    'green': '#51cd00',
-    'yellow': '#ffcb00',
-    'orange': '#ff9f00',
-    'red': '#ff613d',
-    'pink': '#ff4bda',
-    'purple': '#af51f5',
+  const _containerColors: { [key: string]: string } = {
+    blue: '#37adff',
+    turquoise: '#00c79a',
+    green: '#51cd00',
+    yellow: '#ffcb00',
+    orange: '#ff9f00',
+    red: '#ff613d',
+    pink: '#ff4bda',
+    purple: '#af51f5',
   };
-  const _containers = [{
-    color: 'blue',
-    colorCode: _containerColors['blue'],
-    cookieStoreId: 'firefox-container-1',
-    icon: 'fingerprint',
-    iconUrl: 'resource://usercontext-content/fingerprint.svg',
-    name: 'Personal',
-  }, {
-    color: 'orange',
-    colorCode: _containerColors['orange'],
-    cookieStoreId: 'firefox-container-2',
-    icon: 'briefcase',
-    iconUrl: '"resource://usercontext-content/briefcase.svg"',
-    name: 'Work',
-  }, {
-    color: 'green',
-    colorCode: _containerColors['green'],
-    cookieStoreId: 'firefox-container-3',
-    icon: 'dollar',
-    iconUrl: 'resource://usercontext-content/dollar.svg',
-    name: 'Banking',
-  }, {
-    color: 'pink',
-    colorCode: _containerColors['pink'],
-    cookieStoreId: 'firefox-container-4',
-    icon: 'cart',
-    iconUrl: 'resource://usercontext-content/cart.svg',
-    name: 'Shopping',
-  }];
+  const _containers: Array<{ [key: string]: string }> = [
+    {
+      color: 'blue',
+      colorCode: _containerColors['blue'],
+      cookieStoreId: 'firefox-container-1',
+      icon: 'fingerprint',
+      iconUrl: 'resource://usercontext-content/fingerprint.svg',
+      name: 'Personal',
+    },
+    {
+      color: 'orange',
+      colorCode: _containerColors['orange'],
+      cookieStoreId: 'firefox-container-2',
+      icon: 'briefcase',
+      iconUrl: '"resource://usercontext-content/briefcase.svg"',
+      name: 'Work',
+    },
+    {
+      color: 'green',
+      colorCode: _containerColors['green'],
+      cookieStoreId: 'firefox-container-3',
+      icon: 'dollar',
+      iconUrl: 'resource://usercontext-content/dollar.svg',
+      name: 'Banking',
+    },
+    {
+      color: 'pink',
+      colorCode: _containerColors['pink'],
+      cookieStoreId: 'firefox-container-4',
+      icon: 'cart',
+      iconUrl: 'resource://usercontext-content/cart.svg',
+      name: 'Shopping',
+    },
+  ];
   let _userContextId = 5;
 
   return {
-    fakeApi(browser) {
+    fakeApi(browser: BrowserFake): void {
       const contextualIdentities = {
-        async create(container) {
+        async create(container: any): Promise<any> {
           const newContainer = {
             color: container.color,
             colorCode: _containerColors[container.color],
@@ -57,15 +64,17 @@ module.exports = () => {
           _userContextId++;
 
           if (browser.contextualIdentities.onCreated.addListener.callCount) {
-            browser.contextualIdentities.onCreated.addListener.yield(newContainer);
+            browser.contextualIdentities.onCreated.addListener.yield(
+              newContainer
+            );
           }
 
           return newContainer;
         },
 
-        async remove(cookieStoreId) {
-          const containerIndex = _containers.findIndex(container =>
-            container.cookieStoreId === cookieStoreId
+        async remove(cookieStoreId: any): Promise<any> {
+          const containerIndex = _containers.findIndex(
+            container => container.cookieStoreId === cookieStoreId
           );
           if (containerIndex === -1) {
             throw new Error('Couldnt find contextualIdentity');
@@ -78,7 +87,7 @@ module.exports = () => {
           }
         },
 
-        async query(query) {
+        async query(query: any): Promise<any> {
           return _containers.filter(container => {
             return Object.keys(query).every(key => {
               return container[key] === query[key];
@@ -86,15 +95,21 @@ module.exports = () => {
           });
         },
 
-        async get(cookieStoreId) {
-          return _containers.find(container => container.cookieStoreId === cookieStoreId);
-        }
+        async get(cookieStoreId: any): Promise<any> {
+          return _containers.find(
+            container => container.cookieStoreId === cookieStoreId
+          );
+        },
       };
 
-      browser.contextualIdentities.create.callsFake(contextualIdentities.create);
+      browser.contextualIdentities.create.callsFake(
+        contextualIdentities.create
+      );
       browser.contextualIdentities._create = contextualIdentities.create;
 
-      browser.contextualIdentities.remove.callsFake(contextualIdentities.remove);
+      browser.contextualIdentities.remove.callsFake(
+        contextualIdentities.remove
+      );
       browser.contextualIdentities._remove = contextualIdentities.remove;
 
       browser.contextualIdentities.query.callsFake(contextualIdentities.query);
@@ -102,6 +117,6 @@ module.exports = () => {
 
       browser.contextualIdentities.get.callsFake(contextualIdentities.get);
       browser.contextualIdentities._get = contextualIdentities.get;
-    }
+    },
   };
 };

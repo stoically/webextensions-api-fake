@@ -1,14 +1,14 @@
-const alarms = require('./alarms');
-const contextualIdentities = require('./contextualIdentities');
-const cookies = require('./cookies');
-const extension = require('./extension');
-const i18n = require('./i18n');
-const runtime = require('./runtime');
-const storage = require('./storage');
-const tabs = require('./tabs');
-const windows = require('./windows');
+import alarms from './alarms';
+import contextualIdentities from './contextualIdentities';
+import cookies from './cookies';
+import extension from './extension';
+import i18n from './i18n';
+import runtime from './runtime';
+import storage from './storage';
+import tabs from './tabs';
+import windows from './windows';
 
-module.exports = options => {
+export default (options: any): any => {
   return {
     alarms: alarms(),
     contextualIdentities: contextualIdentities(),
