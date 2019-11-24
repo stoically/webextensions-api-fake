@@ -1,4 +1,4 @@
-const browserFake = require('../dist');
+const { default: browserFake } = require('../dist');
 const reload = require('require-reload')(require);
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
