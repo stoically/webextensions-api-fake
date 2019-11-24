@@ -1,14 +1,18 @@
-module.exports = () => {
-  const _storage = {};
+export default (): any => {
+  const _storage: {
+    [key: string]: string;
+  } = {};
 
   return {
-    fakeApi(browser) {
+    fakeApi(browser: any): void {
       const storage = {
-        async get(key) {
+        async get(key: any): Promise<any> {
           if (!key) {
             return _storage;
           }
-          let result = {};
+          const result: {
+            [key: string]: string;
+          } = {};
           if (Array.isArray(key)) {
             key.map(akey => {
               if (typeof _storage[akey] !== 'undefined') {
@@ -30,7 +34,7 @@ module.exports = () => {
           return result;
         },
 
-        async set(key, value) {
+        async set(key: any, value: any): Promise<any> {
           if (typeof key === 'object') {
             // TODO support nested objects
             Object.keys(key).map(oKey => {
@@ -41,7 +45,7 @@ module.exports = () => {
           }
         },
 
-        async remove(key) {
+        async remove(key: any): Promise<any> {
           if (Array.isArray(key)) {
             key.map(aKey => {
               delete _storage[aKey];
@@ -49,7 +53,7 @@ module.exports = () => {
           } else {
             delete _storage[key];
           }
-        }
+        },
       };
 
       browser.storage.local.get.callsFake(storage.get);
@@ -60,6 +64,6 @@ module.exports = () => {
 
       browser.storage.local.remove.callsFake(storage.remove);
       browser.storage.local._remove = storage.remove;
-    }
+    },
   };
 };
