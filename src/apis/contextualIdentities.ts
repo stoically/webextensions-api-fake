@@ -85,6 +85,8 @@ export default (): any => {
           if (browser.contextualIdentities.onRemoved.addListener.callCount) {
             browser.contextualIdentities.onRemoved.addListener.yield(container);
           }
+
+          return container;
         },
 
         async query(query: any): Promise<any> {
