@@ -230,7 +230,7 @@ export default (): any => {
             _tabs.splice(tabIndex, 1);
 
             if (browser.tabs.onRemoved.addListener.callCount) {
-              browser.tabs.onRemoved.addListener.yield(tab);
+              browser.tabs.onRemoved.addListener.yield(tab.id);
             }
           };
 
