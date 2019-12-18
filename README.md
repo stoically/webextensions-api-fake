@@ -81,6 +81,17 @@ Currently supported API fake implementations based on Firefox57+:
     - **get**
     - **remove**
     - **set**
+    - **clean**
+  - **sync**
+    - **get**
+    - **remove**
+    - **set**
+    - **clean**
+  - **managed**
+    - **get**
+    - **remove**
+    - **set**
+    - **clean**
 
 Faked API methods are also directly available with underscore prefix. E.g. `browser.tabs._create` exposes the `browser.tabs.create` fake. This can be useful to trigger fake behavior from tests without polluting its sinon call history.
 
