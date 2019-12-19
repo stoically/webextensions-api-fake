@@ -164,7 +164,7 @@ export default (): any => {
           }
           (fake.responses.tabs = {}), (fake.responses.webRequest = {});
 
-          let promises: any;
+          let promises: any = [];
           if (
             updateProperties.url &&
             !updateProperties.url.startsWith('about:') &&
