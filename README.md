@@ -44,6 +44,8 @@ Currently supported API fake implementations based on Firefox57+:
   - **remove**
     - triggers: onRemoved
   - **query**
+  - **update**
+    - triggers: onUpdated
 
 - [cookies](https://developer.mozilla.org/Add-ons/WebExtensions/API/cookies)
 

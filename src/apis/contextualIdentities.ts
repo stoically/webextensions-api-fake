@@ -102,6 +102,28 @@ export default (): any => {
             container => container.cookieStoreId === cookieStoreId
           );
         },
+
+        async update(cookieStoreId: any, details: any): Promise<any> {
+          const container = _containers.find(
+            container => container.cookieStoreId === cookieStoreId
+          );
+          if (!container) {
+            throw new Error('Container not found');
+          }
+
+          _containers[cookieStoreId] = {
+            ...container,
+            ...details,
+          };
+
+          if (browser.contextualIdentities.onUpdated.addListener.callCount) {
+            browser.contextualIdentities.onUpdated.addListener.yield({
+              contextualIdentity: _containers[cookieStoreId],
+            });
+          }
+
+          return _containers[cookieStoreId];
+        },
       };
 
       browser.contextualIdentities.create.callsFake(
