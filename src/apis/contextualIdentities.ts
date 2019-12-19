@@ -104,25 +104,25 @@ export default (): any => {
         },
 
         async update(cookieStoreId: any, details: any): Promise<any> {
-          const container = _containers.find(
+          const containerIdx = _containers.findIndex(
             container => container.cookieStoreId === cookieStoreId
           );
-          if (!container) {
+          if (containerIdx === -1) {
             throw new Error('Container not found');
           }
 
-          _containers[cookieStoreId] = {
-            ...container,
+          _containers[containerIdx] = {
+            ..._containers[containerIdx],
             ...details,
           };
 
           if (browser.contextualIdentities.onUpdated.addListener.callCount) {
             browser.contextualIdentities.onUpdated.addListener.yield({
-              contextualIdentity: _containers[cookieStoreId],
+              contextualIdentity: _containers[containerIdx],
             });
           }
 
-          return _containers[cookieStoreId];
+          return _containers[containerIdx];
         },
       };
 
