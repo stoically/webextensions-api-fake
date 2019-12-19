@@ -52,6 +52,7 @@ export interface ContextualIdentitiesFake extends ContextualIdentities {
   _remove(cookieStoreId: any): Promise<any>;
   _query(query: any): Promise<any>;
   _get(cookieStoreId: any): Promise<any>;
+  _update(cookieStoreId: any, details: any): Promise<any>;
 }
 
 export interface CookiesFake extends Cookies {

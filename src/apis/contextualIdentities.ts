@@ -141,6 +141,11 @@ export default (): any => {
 
       browser.contextualIdentities.get.callsFake(contextualIdentities.get);
       browser.contextualIdentities._get = contextualIdentities.get;
+
+      browser.contextualIdentities.update.callsFake(
+        contextualIdentities.update
+      );
+      browser.contextualIdentities._update = contextualIdentities.update;
     },
   };
 };
