@@ -83,7 +83,9 @@ export default (): any => {
           _containers.splice(containerIndex, 1);
 
           if (browser.contextualIdentities.onRemoved.addListener.callCount) {
-            browser.contextualIdentities.onRemoved.addListener.yield(container);
+            browser.contextualIdentities.onRemoved.addListener.yield({
+              contextualIdentity: container,
+            });
           }
 
           return container;
