@@ -6,6 +6,9 @@ export default (): any => {
     fakeApi(browser: BrowserFake): void {
       const runtime = {
         getURL(path: string): string {
+          if (!path) {
+            return `${mozExtProtocol}//fake/`;
+          }
           if (path.startsWith('//')) {
             return `${mozExtProtocol}${path}`;
           }
