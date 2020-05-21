@@ -6,7 +6,7 @@ const makeStorage = (): any => {
   return {
     async get(key: any): Promise<any> {
       if (!key) {
-        return _storage;
+        return JSON.parse(JSON.stringify(_storage));
       }
       const result: {
         [key: string]: string;
@@ -29,17 +29,17 @@ const makeStorage = (): any => {
       } else {
         result[key] = _storage[key];
       }
-      return result;
+      return JSON.parse(JSON.stringify(result));
     },
 
     async set(key: any, value: any): Promise<any> {
       if (typeof key === 'object') {
         // TODO support nested objects
         Object.keys(key).map(oKey => {
-          _storage[oKey] = key[oKey];
+          _storage[oKey] = JSON.parse(JSON.stringify(key[oKey]));
         });
       } else {
-        _storage[key] = value;
+        _storage[key] = JSON.parse(JSON.stringify(value));
       }
     },
 
