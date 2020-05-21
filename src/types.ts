@@ -82,9 +82,19 @@ export interface RuntimeFake extends Runtime {
 }
 
 export interface StorageFake extends Storage {
-  _get(key: any): Promise<any>;
-  _set(key: any, value: any): Promise<any>;
-  _remove(key: any): Promise<any>;
+  StorageArea: {
+    clear: sinon.SinonStub;
+    get: sinon.SinonStub;
+    getBytesInUse?: sinon.SinonStub;
+    remove: sinon.SinonStub;
+    set: sinon.SinonStub;
+    _get(key: any): Promise<any>;
+    _set(key: any, value: any): Promise<any>;
+    _remove(key: any): Promise<any>;
+  };
+  local: StorageFake['StorageArea'];
+  managed: StorageFake['StorageArea'];
+  sync: StorageFake['StorageArea'];
 }
 
 export interface TabsFake extends Tabs {
